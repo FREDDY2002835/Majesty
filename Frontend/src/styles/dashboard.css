@@ -1,0 +1,80 @@
+.dashboard {
+    min-height: 100vh;
+    padding: 20px;
+    background: #0b1220;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.navbar h2 {
+    color: var(--primary);
+}
+
+.navbar button {
+    background: red;
+    border: none;
+    padding: 8px 14px;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* SELECT */
+.controls {
+    margin: 20px 0;
+}
+
+select {
+    padding: 10px;
+    border-radius: 8px;
+    background: #111a2e;
+    color: white;
+    border: 1px solid var(--border);
+}
+
+/* MIC */
+.mic-section {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.mic-btn {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+.mic-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.card-blue {
+    border: 1px solid var(--primary);
+}

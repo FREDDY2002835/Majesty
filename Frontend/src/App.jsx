@@ -1,9 +1,10 @@
+import Login from "./pages/login";
+import Dashboard from "./pages/dashboard";
+
+
 function App() {
   return (
-    <div>
-      <h1>Majesty</h1>
-      <p>AI Speech Translation Assistant</p>
-    </div>
+    <Dashboard />
   );
 }
 
