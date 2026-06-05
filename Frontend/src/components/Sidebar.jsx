@@ -126,6 +126,7 @@ export default function Sidebar() {
                 fontSize: "14px", fontWeight: active ? "500" : "400",
                 transition: "all 0.2s",
                 boxShadow: active ? "var(--shadow-accent)" : "none",
+                textDecoration: "none",
               }}
               onMouseEnter={e => { if (!active) e.currentTarget.style.background = "var(--bg-hover)"; }}
               onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}
