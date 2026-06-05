@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [form, setForm] = useState({
+    name: "", email: "", password: "", confirm: "",
+  });
   const navigate = useNavigate();
 
   return (
@@ -15,14 +18,31 @@ export default function LoginPage() {
           fontSize: "22px", fontWeight: "700",
           color: "var(--text-primary)", marginBottom: "6px",
         }}>
-          Welcome back
+          Create your account
         </h1>
         <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-          Login to continue to your account
+          Join Majesty and break language barriers
         </p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+
+        <div style={{ position: "relative" }}>
+          <span style={iconStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Full name"
+            value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value })}
+            style={inputStyle}
+          />
+        </div>
+
         <div style={{ position: "relative" }}>
           <span style={iconStyle}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -58,10 +78,23 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <div style={{ textAlign: "right", marginTop: "-6px" }}>
-          <Link to="#" style={{ fontSize: "12px", color: "var(--accent)" }}>
-            Forgot password?
-          </Link>
+        <div style={{ position: "relative" }}>
+          <span style={iconStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input
+            type={showConfirm ? "text" : "password"}
+            placeholder="Confirm password"
+            value={form.confirm}
+            onChange={e => setForm({ ...form, confirm: e.target.value })}
+            style={inputStyle}
+          />
+          <button onClick={() => setShowConfirm(!showConfirm)} style={eyeBtnStyle}>
+            <EyeIcon show={showConfirm} />
+          </button>
         </div>
 
         <button
@@ -77,29 +110,15 @@ export default function LoginPage() {
             marginTop: "4px", cursor: "pointer",
           }}
         >
-          Login
-      </button>
+          Register
+        </button>
 
         <p style={{ textAlign: "center", fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>
-          Don't have an account?{" "}
-          <Link to="/register" style={{ color: "var(--accent)", fontWeight: "500" }}>
-            Register
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "var(--accent)", fontWeight: "500" }}>
+            Login
           </Link>
         </p>
-      </div>
-
-      <div style={{ textAlign: "center", marginTop: "28px", opacity: 0.4 }}>
-        <svg width="120" height="60" viewBox="0 0 120 60">
-          <ellipse cx="60" cy="40" rx="55" ry="18" fill="none" stroke="#2563eb" strokeWidth="1" strokeDasharray="4 3"/>
-          <ellipse cx="60" cy="40" rx="35" ry="18" fill="none" stroke="#2563eb" strokeWidth="0.7" strokeDasharray="3 4"/>
-          <line x1="5" y1="40" x2="115" y2="40" stroke="#2563eb" strokeWidth="0.7" strokeDasharray="3 3"/>
-          {[20,40,60,80,100].map((x, i) => (
-            <circle key={i} cx={x} cy="40" r="1.5" fill="#2563eb" opacity="0.8"/>
-          ))}
-          <circle cx="60" cy="16" r="4" fill="#2563eb" opacity="0.9"/>
-          <path d="M60 20 Q70 30 65 40" stroke="#2563eb" strokeWidth="0.8" fill="none"/>
-          <path d="M60 20 Q50 30 55 40" stroke="#2563eb" strokeWidth="0.8" fill="none"/>
-        </svg>
       </div>
     </AuthLayout>
   );
