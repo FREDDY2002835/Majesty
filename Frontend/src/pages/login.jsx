@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import logo from "../assets/logo.png";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -88,19 +89,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div style={{ textAlign: "center", marginTop: "28px", opacity: 0.4 }}>
-        <svg width="120" height="60" viewBox="0 0 120 60">
-          <ellipse cx="60" cy="40" rx="55" ry="18" fill="none" stroke="#2563eb" strokeWidth="1" strokeDasharray="4 3"/>
-          <ellipse cx="60" cy="40" rx="35" ry="18" fill="none" stroke="#2563eb" strokeWidth="0.7" strokeDasharray="3 4"/>
-          <line x1="5" y1="40" x2="115" y2="40" stroke="#2563eb" strokeWidth="0.7" strokeDasharray="3 3"/>
-          {[20,40,60,80,100].map((x, i) => (
-            <circle key={i} cx={x} cy="40" r="1.5" fill="#2563eb" opacity="0.8"/>
-          ))}
-          <circle cx="60" cy="16" r="4" fill="#2563eb" opacity="0.9"/>
-          <path d="M60 20 Q70 30 65 40" stroke="#2563eb" strokeWidth="0.8" fill="none"/>
-          <path d="M60 20 Q50 30 55 40" stroke="#2563eb" strokeWidth="0.8" fill="none"/>
-        </svg>
-      </div>
+      {/* image */}
+      <img src={logo} alt="Logo" style={{width: "90px", height: "auto", }}/>
     </AuthLayout>
   );
 }

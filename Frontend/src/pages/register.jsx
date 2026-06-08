@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import logo from "../assets/logo.png";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -120,6 +121,8 @@ export default function RegisterPage() {
           </Link>
         </p>
       </div>
+      {/* image */}
+            <img src={logo} alt="Logo" style={{width: "90px", height: "auto"}}/>
     </AuthLayout>
   );
 }
