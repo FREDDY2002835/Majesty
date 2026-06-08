@@ -1,7 +1,8 @@
-
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
+
+
 const languages = [
   { code: "fr", label: "French (Français)", flag: "🇫🇷" },
   { code: "es", label: "Spanish (Español)", flag: "🇪🇸" },
@@ -73,7 +74,7 @@ export default function DashboardPage() {
                 <line x1="12" y1="19" x2="12" y2="23" stroke="white" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: "700" }}>Majesty</span>
+            <span style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: "700", color: "var(--accent)" }}>Majesty</span>
           </div>
 
           {/* Right: bell + user */}
@@ -104,8 +105,8 @@ export default function DashboardPage() {
           {/* Welcome + language selector */}
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
-              <h1 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: "700", marginBottom: "4px" }}>
-                Welcome, Frederick! 👋
+              <h1 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: "700", marginBottom: "4px", color: "var(--accent)" }}>
+                Welcome ! 👋
               </h1>
               <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
                 Speak, translate and connect with the world.
@@ -344,7 +345,7 @@ export default function DashboardPage() {
           }}>
             <h2 style={{
               fontFamily: "var(--font-display)", fontSize: "16px",
-              fontWeight: "600", marginBottom: "16px",
+              fontWeight: "600", marginBottom: "16px", color: "var(--accent)",
             }}>
               Recent History
             </h2>

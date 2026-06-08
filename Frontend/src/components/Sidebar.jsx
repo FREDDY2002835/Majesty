@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const navItems = [
   {
@@ -87,23 +88,13 @@ export default function Sidebar() {
         display: "flex", alignItems: "center",
         gap: "10px", padding: "0 20px", marginBottom: "32px",
       }}>
-        <div style={{
-          width: "34px", height: "34px", borderRadius: "50%",
-          background: "var(--accent)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "var(--shadow-accent)", flexShrink: 0,
-        }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z" fill="white"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            <line x1="12" y1="19" x2="12" y2="23" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            <line x1="8" y1="23" x2="16" y2="23" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <img src={logo} alt="Logo" style={{width: "70px", height: "auto", }}/>
         </div>
         <span style={{
           fontFamily: "var(--font-display)",
           fontSize: "18px", fontWeight: "700",
-          color: "var(--text-primary)",
+          color: "var(--accent)",
         }}>
           Majesty
         </span>
