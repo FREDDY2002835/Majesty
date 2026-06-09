@@ -19,6 +19,7 @@ const history = [
 ];
 
 export default function DashboardPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listening, setListening] = useState(false);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
@@ -42,11 +43,26 @@ export default function DashboardPage() {
   const formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-primary)" }}>
-      <Sidebar />
+    <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
+
+        {sidebarOpen && (
+          <div onClick={() => setSidebarOpen(false)} style={{
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,0.6)", zIndex: 20,
+          }} />
+        )}
+
+        <div style={{
+          position: "fixed", top: 0, left: 0,
+          height: "100vh", zIndex: 30,
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s ease",
+        }}>
+          <Sidebar onClose={() => setSidebarOpen(false)} />
+    </div>
 
       {/* Main content */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", overflow: "auto" }}>
 
         {/* Top navbar */}
         <header style={{
@@ -54,7 +70,7 @@ export default function DashboardPage() {
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
           background: "var(--bg-secondary)", position: "sticky", top: 0, zIndex: 10,
         }}>
-          <button style={{ background: "none", border: "none", color: "var(--text-secondary)", padding: 0 }}>
+          <button onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", color: "var(--text-secondary)", padding: 0, cursor: "pointer" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="6" x2="21" y2="6"/>
               <line x1="3" y1="12" x2="21" y2="12"/>

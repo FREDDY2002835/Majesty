@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
+
 export default function SettingsPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState({
     name: "Frederick Muhimuzi",
     email: "frederick@example.com",
@@ -38,17 +40,42 @@ export default function SettingsPage() {
   const speedOptions = ["Slow", "Normal", "Fast"];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-primary)" }}>
-      <Sidebar />
+    <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
+    
+            {sidebarOpen && (
+              <div onClick={() => setSidebarOpen(false)} style={{
+                position: "fixed", inset: 0,
+                background: "rgba(0,0,0,0.6)", zIndex: 20,
+              }} />
+            )}
+    
+            <div style={{
+              position: "fixed", top: 0, left: 0,
+              height: "100vh", zIndex: 30,
+              transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+              transition: "transform 0.3s ease",
+            }}>
+              <Sidebar onClose={() => setSidebarOpen(false)} />
+        </div>
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
-
+      <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
         {/* Header */}
+        
         <header style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
           background: "var(--bg-secondary)", position: "sticky", top: 0, zIndex: 10,
         }}>
+          <button onClick={() => setSidebarOpen(true)} style={{
+            background: "none", border: "none",
+            color: "var(--text-secondary)", cursor: "pointer", padding: 0,
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: "700", color: "var(--text-primary)" }}>
             Settings
           </h1>
