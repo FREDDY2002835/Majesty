@@ -12,4 +12,6 @@ router.get('/me', auth, getMe);
 router.put('/me', auth, updateMe);
 router.delete('/me', auth, deleteMe);
 
+// fine
+
 module.exports = router;
