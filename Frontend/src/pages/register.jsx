@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import { signup } from "../api"; 
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,7 +9,37 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     name: "", email: "", password: "", confirm: "",
   });
+  const [error, setError] = useState("");     
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
+
+  const handleRegister = async () => {
+  setError("");
+
+  if (!form.name || !form.email || !form.password) {
+    return setError("Please fill in all fields.");
+  }
+
+  if (form.password !== form.confirm) {
+    return setError("Passwords do not match.");
+  }
+
+  if (form.password.length < 6) {
+    return setError("Password must be at least 6 characters.");
+  }
+
+  setLoading(true);
+  const data = await signup(form.name, form.email, form.password);
+  setLoading(false);
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    navigate("/dashboard");
+  } else {
+    setError(data.message || "Registration failed. Please try again.");
+  }
+};
 
   return (
     <AuthLayout>
@@ -97,8 +128,15 @@ export default function RegisterPage() {
           </button>
         </div>
 
+        {error && (
+          <p style={{ color: "#ef4444", fontSize: "13px", textAlign: "center" }}>
+            {error}
+          </p>
+        )}
+
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={handleRegister}
+          disabled={loading}
           style={{
             width: "100%", padding: "13px",
             background: "var(--accent)", border: "none",
@@ -110,7 +148,7 @@ export default function RegisterPage() {
             marginTop: "4px", cursor: "pointer",
           }}
         >
-          Register
+          {loading ? "Creating account..." : "Register"}
         </button>
 
         <p style={{ textAlign: "center", fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>

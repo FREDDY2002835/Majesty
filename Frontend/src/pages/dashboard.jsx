@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
+import { translate } from "../api";
 
 
 const languages = [
@@ -25,6 +26,12 @@ export default function DashboardPage() {
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [timer, setTimer] = useState(5);
   const [starred, setStarred] = useState({});
+  const [inputText, setInputText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translationError, setTranslationError] = useState("");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  
 
   const toggleListening = () => {
     setListening(!listening);
@@ -42,6 +49,22 @@ export default function DashboardPage() {
 
   const formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
+
+  const handleTranslate = async () => {
+  if (!inputText.trim()) return;
+  setIsTranslating(true);
+  setTranslationError("");
+
+  const data = await translate(inputText, "auto", selectedLang.code);
+
+  setIsTranslating(false);
+
+  if (data.translated_text) {
+    setTranslatedText(data.translated_text);
+  } else {
+    setTranslationError("Translation failed. Please try again.");
+  }
+};
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
 
@@ -106,8 +129,8 @@ export default function DashboardPage() {
                 width: "32px", height: "32px", borderRadius: "50%",
                 background: "var(--accent)", display: "flex", alignItems: "center",
                 justifyContent: "center", fontSize: "13px", fontWeight: "600",
-              }}>F</div>
-              <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>Frederick</span>
+              }}>{user.name?.charAt(0).toUpperCase()}</div>
+              <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9"/>
               </svg>
@@ -122,7 +145,7 @@ export default function DashboardPage() {
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <h1 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: "700", marginBottom: "4px", color: "var(--accent)" }}>
-                Welcome ! 👋
+                Welcome, {user.name}! 👋
               </h1>
               <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
                 Speak, translate and connect with the world.
@@ -201,9 +224,18 @@ export default function DashboardPage() {
                   Detected: <span style={{ color: "var(--success)" }}>English</span>
                 </span>
               </div>
-              <p style={{ color: "var(--text-primary)", fontSize: "16px", marginBottom: "20px", minHeight: "48px" }}>
-                Hello, how are you today?
-              </p>
+              <textarea
+                placeholder="Type something to translate..."
+                value={inputText}
+                onChange={e => setInputText(e.target.value)}
+                style={{
+                  width: "100%", minHeight: "80px",
+                  background: "transparent", border: "none",
+                  color: "var(--text-primary)", fontSize: "16px",
+                  resize: "none", outline: "none",
+                  marginBottom: "20px", fontFamily: "inherit",
+                }}
+              />
               <WaveForm active={listening} />
             </div>
 
@@ -240,9 +272,12 @@ export default function DashboardPage() {
               <div style={{ marginBottom: "14px" }}>
                 <span style={{ color: "var(--accent)", fontWeight: "600", fontSize: "14px" }}>Translation</span>
               </div>
-              <p style={{ color: "var(--text-primary)", fontSize: "16px", marginBottom: "20px", minHeight: "48px" }}>
-                Bonjour, comment allez-vous aujourd'hui?
-              </p>
+              <p style={{ color: "var(--text-primary)", fontSize: "16px", marginBottom: "20px", minHeight: "80px" }}>
+              {isTranslating ? "Translating..." : translatedText || "Translation will appear here..."}
+            </p>
+            {translationError && (
+              <p style={{ color: "#ef4444", fontSize: "13px" }}>{translationError}</p>
+            )}
               <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-muted)", fontSize: "13px" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -260,7 +295,7 @@ export default function DashboardPage() {
             {/* Left: start/stop */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <button
-                onClick={toggleListening}
+                onClick={handleTranslate}
                 style={{
                   display: "flex", alignItems: "center", gap: "8px",
                   padding: "10px 18px", background: "var(--bg-card)",
@@ -274,7 +309,7 @@ export default function DashboardPage() {
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                   <line x1="12" y1="19" x2="12" y2="23"/>
                 </svg>
-                {listening ? "Listening..." : "Start Speaking"}
+                 {isTranslating ? "Translating..." : "Translate"}
               </button>
 
               {/* Big mic button */}

@@ -1,11 +1,31 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import { login } from "../api";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");    
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
+
+  const handleLogin = async () => {
+  setError("");
+  setLoading(true);
+
+  const data = await login(form.email, form.password);
+
+  setLoading(false);
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    navigate("/dashboard");
+  } else {
+    setError(data.message || "Login failed. Please try again.");
+  }
+};
 
   return (
     <AuthLayout>
@@ -64,8 +84,15 @@ export default function LoginPage() {
           </Link>
         </div>
 
+          {/* this is an error message */}
+        {error && (
+        <p style={{ color: "#ef4444", fontSize: "13px", textAlign: "center" }}>
+          {error}
+        </p>  
+        )}
+
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={handleLogin}
           style={{
             width: "100%", padding: "13px",
             background: "var(--accent)", border: "none",
