@@ -41,9 +41,8 @@ export const translate = (text, source_language, target_language) =>
   fetch(`${BASE_URL}/translate`, {
     method: 'POST',
     headers: headers(true),
-    body: JSON.stringify({ text, source_language: 'en', target_language }),
+    body: JSON.stringify({ text, source_language, target_language }),
   }).then(r => r.json());
-
   
 // ── History ───────────────────────────────────────
 export const getHistory = () =>

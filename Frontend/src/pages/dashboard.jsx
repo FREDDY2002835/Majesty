@@ -1,16 +1,107 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
-import { translate } from "../api";
+import { translate, getHistory, detectLanguage } from "../api";
 
 
 const languages = [
-  { code: "fr", label: "French (Français)", flag: "🇫🇷" },
-  { code: "es", label: "Spanish (Español)", flag: "🇪🇸" },
-  { code: "de", label: "German (Deutsch)", flag: "🇩🇪" },
-  { code: "zh", label: "Chinese (中文)", flag: "🇨🇳" },
-  { code: "ar", label: "Arabic (العربية)", flag: "🇸🇦" },
-  { code: "pt", label: "Portuguese (Português)", flag: "🇧🇷" },
+  { code: "af", label: "Afrikaans", flag: "🇿🇦" },
+  { code: "sq", label: "Albanian", flag: "🇦🇱" },
+  { code: "ar", label: "Arabic", flag: "🇸🇦" },
+  { code: "hy", label: "Armenian", flag: "🇦🇲" },
+  { code: "az", label: "Azerbaijani", flag: "🇦🇿" },
+  { code: "eu", label: "Basque", flag: "🇪🇸" },
+  { code: "be", label: "Belarusian", flag: "🇧🇾" },
+  { code: "bn", label: "Bengali", flag: "🇧🇩" },
+  { code: "bs", label: "Bosnian", flag: "🇧🇦" },
+  { code: "bg", label: "Bulgarian", flag: "🇧🇬" },
+  { code: "ca", label: "Catalan", flag: "🇪🇸" },
+  { code: "zh", label: "Chinese", flag: "🇨🇳" },
+  { code: "hr", label: "Croatian", flag: "🇭🇷" },
+  { code: "cs", label: "Czech", flag: "🇨🇿" },
+  { code: "da", label: "Danish", flag: "🇩🇰" },
+  { code: "nl", label: "Dutch", flag: "🇳🇱" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "eo", label: "Esperanto", flag: "🌍" },
+  { code: "et", label: "Estonian", flag: "🇪🇪" },
+  { code: "tl", label: "Filipino", flag: "🇵🇭" },
+  { code: "fi", label: "Finnish", flag: "🇫🇮" },
+  { code: "fr", label: "French", flag: "🇫🇷" },
+  { code: "gl", label: "Galician", flag: "🇪🇸" },
+  { code: "ka", label: "Georgian", flag: "🇬🇪" },
+  { code: "de", label: "German", flag: "🇩🇪" },
+  { code: "el", label: "Greek", flag: "🇬🇷" },
+  { code: "gu", label: "Gujarati", flag: "🇮🇳" },
+  { code: "ht", label: "Haitian Creole", flag: "🇭🇹" },
+  { code: "ha", label: "Hausa", flag: "🇳🇬" },
+  { code: "he", label: "Hebrew", flag: "🇮🇱" },
+  { code: "hi", label: "Hindi", flag: "🇮🇳" },
+  { code: "hu", label: "Hungarian", flag: "🇭🇺" },
+  { code: "is", label: "Icelandic", flag: "🇮🇸" },
+  { code: "ig", label: "Igbo", flag: "🇳🇬" },
+  { code: "id", label: "Indonesian", flag: "🇮🇩" },
+  { code: "ga", label: "Irish", flag: "🇮🇪" },
+  { code: "it", label: "Italian", flag: "🇮🇹" },
+  { code: "ja", label: "Japanese", flag: "🇯🇵" },
+  { code: "jw", label: "Javanese", flag: "🇮🇩" },
+  { code: "kn", label: "Kannada", flag: "🇮🇳" },
+  { code: "kk", label: "Kazakh", flag: "🇰🇿" },
+  { code: "km", label: "Khmer", flag: "🇰🇭" },
+  { code: "ko", label: "Korean", flag: "🇰🇷" },
+  { code: "ku", label: "Kurdish", flag: "🌍" },
+  { code: "ky", label: "Kyrgyz", flag: "🇰🇬" },
+  { code: "lo", label: "Lao", flag: "🇱🇦" },
+  { code: "la", label: "Latin", flag: "🌍" },
+  { code: "lv", label: "Latvian", flag: "🇱🇻" },
+  { code: "lt", label: "Lithuanian", flag: "🇱🇹" },
+  { code: "lb", label: "Luxembourgish", flag: "🇱🇺" },
+  { code: "mk", label: "Macedonian", flag: "🇲🇰" },
+  { code: "mg", label: "Malagasy", flag: "🇲🇬" },
+  { code: "ms", label: "Malay", flag: "🇲🇾" },
+  { code: "ml", label: "Malayalam", flag: "🇮🇳" },
+  { code: "mt", label: "Maltese", flag: "🇲🇹" },
+  { code: "mi", label: "Maori", flag: "🇳🇿" },
+  { code: "mr", label: "Marathi", flag: "🇮🇳" },
+  { code: "mn", label: "Mongolian", flag: "🇲🇳" },
+  { code: "my", label: "Myanmar (Burmese)", flag: "🇲🇲" },
+  { code: "ne", label: "Nepali", flag: "🇳🇵" },
+  { code: "no", label: "Norwegian", flag: "🇳🇴" },
+  { code: "ny", label: "Nyanja (Chichewa)", flag: "🇲🇼" },
+  { code: "ps", label: "Pashto", flag: "🇦🇫" },
+  { code: "fa", label: "Persian", flag: "🇮🇷" },
+  { code: "pl", label: "Polish", flag: "🇵🇱" },
+  { code: "pt", label: "Portuguese", flag: "🇧🇷" },
+  { code: "pa", label: "Punjabi", flag: "🇮🇳" },
+  { code: "ro", label: "Romanian", flag: "🇷🇴" },
+  { code: "ru", label: "Russian", flag: "🇷🇺" },
+  { code: "sm", label: "Samoan", flag: "🇼🇸" },
+  { code: "gd", label: "Scottish Gaelic", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  { code: "sr", label: "Serbian", flag: "🇷🇸" },
+  { code: "st", label: "Sesotho", flag: "🇱🇸" },
+  { code: "sn", label: "Shona", flag: "🇿🇼" },
+  { code: "sd", label: "Sindhi", flag: "🇵🇰" },
+  { code: "si", label: "Sinhala", flag: "🇱🇰" },
+  { code: "sk", label: "Slovak", flag: "🇸🇰" },
+  { code: "sl", label: "Slovenian", flag: "🇸🇮" },
+  { code: "so", label: "Somali", flag: "🇸🇴" },
+  { code: "es", label: "Spanish", flag: "🇪🇸" },
+  { code: "su", label: "Sundanese", flag: "🇮🇩" },
+  { code: "sw", label: "Swahili", flag: "🇰🇪" },
+  { code: "sv", label: "Swedish", flag: "🇸🇪" },
+  { code: "tg", label: "Tajik", flag: "🇹🇯" },
+  { code: "ta", label: "Tamil", flag: "🇮🇳" },
+  { code: "te", label: "Telugu", flag: "🇮🇳" },
+  { code: "th", label: "Thai", flag: "🇹🇭" },
+  { code: "tr", label: "Turkish", flag: "🇹🇷" },
+  { code: "uk", label: "Ukrainian", flag: "🇺🇦" },
+  { code: "ur", label: "Urdu", flag: "🇵🇰" },
+  { code: "uz", label: "Uzbek", flag: "🇺🇿" },
+  { code: "vi", label: "Vietnamese", flag: "🇻🇳" },
+  { code: "cy", label: "Welsh", flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿" },
+  { code: "xh", label: "Xhosa", flag: "🇿🇦" },
+  { code: "yi", label: "Yiddish", flag: "🌍" },
+  { code: "yo", label: "Yoruba", flag: "🇳🇬" },
+  { code: "zu", label: "Zulu", flag: "🇿🇦" },
 ];
 
 const history = [
@@ -19,31 +110,6 @@ const history = [
   { original: "Thank you very much!", translated: "Merci beaucoup!", from: "English", to: "French", time: "10:15 AM" },
 ];
 
-function detectLangFromText(text) {
-  const patterns = {
-    Arabic: /[\u0600-\u06FF]/,
-    Chinese: /[\u4E00-\u9FFF]/,
-    Japanese: /[\u3040-\u30FF]/,
-    Korean: /[\uAC00-\uD7AF]/,
-    Russian: /[\u0400-\u04FF]/,
-    Greek: /[\u0370-\u03FF]/,
-  };
-
-  for (const [lang, pattern] of Object.entries(patterns)) {
-    if (pattern.test(text)) return lang;
-  }
-
-  // Detect Latin-based languages by common words
-  const lower = text.toLowerCase();
-  if (/\b(le|la|les|je|tu|il|vous|nous|bonjour|merci|oui|non|est|avec|pour)\b/.test(lower)) return "French";
-  if (/\b(el|la|los|las|yo|tú|hola|gracias|sí|no|es|con|por|que)\b/.test(lower)) return "Spanish";
-  if (/\b(der|die|das|ich|du|er|sie|hallo|danke|ja|nein|ist|mit)\b/.test(lower)) return "German";
-  if (/\b(il|lo|la|gli|io|tu|ciao|grazie|sì|no|è|con|per|che)\b/.test(lower)) return "Italian";
-  if (/\b(o|a|os|as|eu|tu|olá|obrigado|sim|não|é|com|por|que)\b/.test(lower)) return "Portuguese";
-  if (/\b(na|ya|wa|ni|kwa|au|lakini|habari|asante|ndiyo|hapana|nina|una|furaha|kukuona|karibu|pamoja|kwenda|kuwa|sana|tafadhali|samahani|chakula|maji|nyumba|familia|rafiki|leo|kesho|jana|nchi|lugha|elimu|kazi|pesa|duka|barabara|gari|ndege|hospitali|shule|kanisa|msikiti|mtoto|watoto|mama|baba|ndugu|dada|kaka|shangazi|mjomba|bibi|babu|mtu|watu|mke|mume|mtaa|mji|kijiji|neno|maneno|siku|wiki|mwezi|mwaka|asubuhi|mchana|jioni|usiku|kesho|juzi|sasa|hapa|pale|huko|ndani|nje|juu|chini|mbele|nyuma|karibu|mbali|upande|kulia|kushoto|kwanza|pili|tatu|moja|mbili|nne|tano|sita|saba|nane|tisa|kumi|mara|bado|tayari|haraka|polepole|vizuri|vibaya|kubwa|ndogo|nzuri|mbaya|mpya|kongwe|mrefu|mfupi|nzito|nyepesi|baridi|moto|gumu|laini|nyeupe|nyekundu|bluu|kijani|njano|nyeusi|rangi|nguo|kofia|viatu|kitabu|kalamu|meza|kiti|mlango|dirisha|ukuta|sakafu|paa|bustani|shamba|mto|bahari|mlima|msitu|jua|mvua|upepo|theluji|ardhi|mbingu|nyota|mwezi|jua|samaki|ndege|simba|tembo|twiga|nyoka|paka|mbwa|ng'ombe|kondoo|kuku|mahali|safari|treni|basi|pikipiki|baiskeli|hospitali|daktari|mgonjwa|dawa|afya|nguvu|uchovu|njaa|kiu|usingizi|ndoto|mapenzi|furaha|huzuni|hasira|woga|tumaini|imani|amani|uhuru|haki|sheria|serikali|rais|waziri|jeshi|polisi|mwalimu|mwanafunzi|darasa|mtihani|chuo|hesabu|sayansi|historia|jiografia|muziki|mchezo|mpira|timu|ushindi|kushindwa|bei|ghali|rahisi|ununua|uza|lipa|fedha|benki|biashara|soko|mazao|kilimo|mvua|jembe|ekari|mazingira|hewa|maji|udongo|mmea|mti|tunda|mboga|mahindi|mchele|unga|sukari|chumvi|mafuta|nyama|maziwa|mayai|mkate|chai|kahawa|maji|pombe|karamu|sherehe|harusi|mazishi|ibada|sala|dua|mungu|roho|moyo|akili|mwili|mkono|mguu|kichwa|macho|masikio|mdomo|pua|meno|nywele|ngozi|damu|pumzi|sauti|maneno|lugha|tabia|desturi|utamaduni|elimu|ujuzi|uzoefu|maisha|ulimwengu|dunia|Afrika|Kenya|Tanzania|Uganda|Rwanda|Burundi|Somalia|Ethiopia)\b/.test(lower)) return "Swahili";
-
-  return "English"; // default
-}
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,19 +125,18 @@ export default function DashboardPage() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const [detectedLang, setDetectedLang] = useState("");
   const [sourceLang, setSourceLang] = useState({ code: "en", label: "English", flag: "🇬🇧" });
+  const [langSearch, setLangSearch] = useState("");
  useEffect(() => {
   if (!inputText.trim()) {
     setDetectedLang("");
     return;
   }
 
-  const timer = setTimeout(() => {
-    // Use browser's Intl to detect language
-    try {
-      const detected = detectLangFromText(inputText);
-      setDetectedLang(detected);
-    } catch {
-      setDetectedLang("unknown");
+  const timer = setTimeout(async () => {
+    const data = await detectLanguage(inputText);
+    if (data.detected_language) {
+      setDetectedLang(data.detected_language);
+      setSourceLang({ code: data.code, label: data.detected_language, flag: "" });
     }
   }, 600);
 
@@ -116,6 +181,10 @@ export default function DashboardPage() {
 
   const data = await translate(inputText, sourceLangCode, selectedLang.code);
   console.log("Final sourceLangCode:", sourceLangCode);
+  
+  console.log("Sending to API:", { text: inputText, source: sourceLangCode, target: selectedLang.code });
+
+    console.log("API response:", data);
 
   setIsTranslating(false);
 
@@ -244,30 +313,51 @@ export default function DashboardPage() {
                 </svg>
               </button>
               {showLangDropdown && (
-                <div style={{
-                  position: "absolute", top: "calc(100% + 4px)", right: 0,
-                  background: "var(--bg-card)", border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-sm)", zIndex: 20,
-                  minWidth: "200px", overflow: "hidden", boxShadow: "var(--shadow)",
-                }}>
-                  {languages.map(lang => (
-                    <button
-                      key={lang.code}
-                      onClick={() => { setSelectedLang(lang); setShowLangDropdown(false); }}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        width: "100%", padding: "10px 14px", background: "none",
-                        border: "none", color: lang.code === selectedLang.code ? "white" : "var(--text-secondary)",
-                        background: lang.code === selectedLang.code ? "var(--accent)" : "transparent",
-                        fontSize: "14px", cursor: "pointer", textAlign: "left",
-                        transition: "background 0.15s",
-                      }}
-                    >
-                      {lang.flag} {lang.label}
-                    </button>
-                  ))}
-                </div>
-              )}
+  <div style={{
+    position: "absolute", top: "calc(100% + 4px)", right: 0,
+    background: "var(--bg-card)", border: "1px solid var(--border)",
+    borderRadius: "var(--radius-sm)", zIndex: 20,
+    width: "220px", boxShadow: "var(--shadow)",
+  }}>
+    {/* Search bar */}
+    <div style={{ padding: "8px", borderBottom: "1px solid var(--border)" }}>
+      <input
+        type="text"
+        placeholder="Search language..."
+        value={langSearch}
+        onChange={e => setLangSearch(e.target.value)}
+        style={{
+          width: "100%", padding: "8px 10px",
+          background: "var(--bg-secondary)", border: "1px solid var(--border)",
+          borderRadius: "var(--radius-sm)", color: "var(--text-primary)",
+          fontSize: "13px", outline: "none",
+        }}
+      />
+    </div>
+
+    {/* Scrollable list */}
+    <div style={{ maxHeight: "240px", overflowY: "auto" }}>
+      {languages
+        .filter(l => l.label.toLowerCase().includes(langSearch.toLowerCase()))
+        .map(lang => (
+          <button
+            key={lang.code}
+            onClick={() => { setSelectedLang(lang); setShowLangDropdown(false); setLangSearch(""); }}
+            style={{
+              display: "flex", alignItems: "center", gap: "10px",
+              width: "100%", padding: "10px 14px", background: "none",
+              border: "none",
+              color: lang.code === selectedLang.code ? "white" : "var(--text-secondary)",
+              backgroundColor: lang.code === selectedLang.code ? "var(--accent)" : "transparent",
+              fontSize: "13px", cursor: "pointer", textAlign: "left",
+            }}
+          >
+            {lang.flag} {lang.label}
+          </button>
+        ))}
+    </div>
+  </div>
+)}
             </div>
           </div>
 

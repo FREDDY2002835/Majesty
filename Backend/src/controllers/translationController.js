@@ -1,5 +1,6 @@
 const axios = require('axios');
 const pool = require('../config/database');
+      
 
 // POST /api/translate
 const translateText = async (req, res) => {
@@ -53,7 +54,6 @@ const translateText = async (req, res) => {
   }
 };
 
-// POST /api/translate/detect
 const detectLanguage = async (req, res) => {
   const { text } = req.body;
 
@@ -62,21 +62,50 @@ const detectLanguage = async (req, res) => {
   }
 
   try {
-    const response = await axios.post(
-      'https://lingua-api.com/api/detect',
-      { text },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    const response = await axios.get('https://api.mymemory.translated.net/get', {
+      params: {
+        q: text,
+        langpair: 'autodetect|en'
+      }
+    });
 
-    const detected = response.data.language || 'unknown';
-    res.json({ detected_language: detected });
+    console.log('MyMemory detect response:', JSON.stringify(response.data, null, 2));
+
+    const detectedCode = response.data.responseData?.detectedLanguage || 'en';
+
+    // Map code to full name
+    const languageNames = {
+      'en': 'English', 'fr': 'French', 'es': 'Spanish',
+      'de': 'German', 'it': 'Italian', 'pt': 'Portuguese',
+      'ru': 'Russian', 'zh': 'Chinese', 'ja': 'Japanese',
+      'ko': 'Korean', 'ar': 'Arabic', 'hi': 'Hindi',
+      'sw': 'Swahili', 'zu': 'Zulu', 'af': 'Afrikaans',
+      'nl': 'Dutch', 'pl': 'Polish', 'tr': 'Turkish',
+      'uk': 'Ukrainian', 'vi': 'Vietnamese', 'th': 'Thai',
+      'id': 'Indonesian', 'ms': 'Malay', 'fa': 'Persian',
+      'he': 'Hebrew', 'bn': 'Bengali', 'ta': 'Tamil',
+      'te': 'Telugu', 'mr': 'Marathi', 'ur': 'Urdu',
+      'pa': 'Punjabi', 'gu': 'Gujarati', 'kn': 'Kannada',
+      'ml': 'Malayalam', 'si': 'Sinhala', 'ne': 'Nepali',
+      'my': 'Myanmar', 'km': 'Khmer', 'lo': 'Lao',
+      'ka': 'Georgian', 'am': 'Amharic', 'so': 'Somali',
+      'ha': 'Hausa', 'yo': 'Yoruba', 'ig': 'Igbo',
+      'mg': 'Malagasy', 'ny': 'Nyanja', 'sn': 'Shona',
+      'st': 'Sesotho', 'xh': 'Xhosa', 'zu': 'Zulu',
+    };
+
+    const detectedName = languageNames[detectedCode] || 'English';
+
+    res.json({
+      detected_language: detectedName,
+      code: detectedCode
+    });
 
   } catch (err) {
     console.error('Detect error:', err.message);
-    res.status(502).json({ message: 'Language detection failed.' });
+    res.json({ detected_language: 'English', code: 'en' });
   }
 };
-
 // GET /api/translate/languages
 const getSupportedLanguages = async (req, res) => {
   res.json({
