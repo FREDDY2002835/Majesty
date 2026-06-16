@@ -62,3 +62,10 @@ export const clearHistory = () =>
     method: 'DELETE',
     headers: headers(true),
   }).then(r => r.json());
+
+  export const detectLanguage = (text) =>
+  fetch(`${BASE_URL}/translate/detect`, {
+    method: 'POST',
+    headers: headers(true),
+    body: JSON.stringify({ text }),
+  }).then(r => r.json());

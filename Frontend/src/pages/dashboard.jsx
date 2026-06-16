@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
 import { translate } from "../api";
@@ -19,6 +19,32 @@ const history = [
   { original: "Thank you very much!", translated: "Merci beaucoup!", from: "English", to: "French", time: "10:15 AM" },
 ];
 
+function detectLangFromText(text) {
+  const patterns = {
+    Arabic: /[\u0600-\u06FF]/,
+    Chinese: /[\u4E00-\u9FFF]/,
+    Japanese: /[\u3040-\u30FF]/,
+    Korean: /[\uAC00-\uD7AF]/,
+    Russian: /[\u0400-\u04FF]/,
+    Greek: /[\u0370-\u03FF]/,
+  };
+
+  for (const [lang, pattern] of Object.entries(patterns)) {
+    if (pattern.test(text)) return lang;
+  }
+
+  // Detect Latin-based languages by common words
+  const lower = text.toLowerCase();
+  if (/\b(le|la|les|je|tu|il|vous|nous|bonjour|merci|oui|non|est|avec|pour)\b/.test(lower)) return "French";
+  if (/\b(el|la|los|las|yo|tú|hola|gracias|sí|no|es|con|por|que)\b/.test(lower)) return "Spanish";
+  if (/\b(der|die|das|ich|du|er|sie|hallo|danke|ja|nein|ist|mit)\b/.test(lower)) return "German";
+  if (/\b(il|lo|la|gli|io|tu|ciao|grazie|sì|no|è|con|per|che)\b/.test(lower)) return "Italian";
+  if (/\b(o|a|os|as|eu|tu|olá|obrigado|sim|não|é|com|por|que)\b/.test(lower)) return "Portuguese";
+  if (/\b(na|ya|wa|ni|kwa|au|lakini|habari|asante|ndiyo|hapana|nina|una|furaha|kukuona|karibu|pamoja|kwenda|kuwa|sana|tafadhali|samahani|chakula|maji|nyumba|familia|rafiki|leo|kesho|jana|nchi|lugha|elimu|kazi|pesa|duka|barabara|gari|ndege|hospitali|shule|kanisa|msikiti|mtoto|watoto|mama|baba|ndugu|dada|kaka|shangazi|mjomba|bibi|babu|mtu|watu|mke|mume|mtaa|mji|kijiji|neno|maneno|siku|wiki|mwezi|mwaka|asubuhi|mchana|jioni|usiku|kesho|juzi|sasa|hapa|pale|huko|ndani|nje|juu|chini|mbele|nyuma|karibu|mbali|upande|kulia|kushoto|kwanza|pili|tatu|moja|mbili|nne|tano|sita|saba|nane|tisa|kumi|mara|bado|tayari|haraka|polepole|vizuri|vibaya|kubwa|ndogo|nzuri|mbaya|mpya|kongwe|mrefu|mfupi|nzito|nyepesi|baridi|moto|gumu|laini|nyeupe|nyekundu|bluu|kijani|njano|nyeusi|rangi|nguo|kofia|viatu|kitabu|kalamu|meza|kiti|mlango|dirisha|ukuta|sakafu|paa|bustani|shamba|mto|bahari|mlima|msitu|jua|mvua|upepo|theluji|ardhi|mbingu|nyota|mwezi|jua|samaki|ndege|simba|tembo|twiga|nyoka|paka|mbwa|ng'ombe|kondoo|kuku|mahali|safari|treni|basi|pikipiki|baiskeli|hospitali|daktari|mgonjwa|dawa|afya|nguvu|uchovu|njaa|kiu|usingizi|ndoto|mapenzi|furaha|huzuni|hasira|woga|tumaini|imani|amani|uhuru|haki|sheria|serikali|rais|waziri|jeshi|polisi|mwalimu|mwanafunzi|darasa|mtihani|chuo|hesabu|sayansi|historia|jiografia|muziki|mchezo|mpira|timu|ushindi|kushindwa|bei|ghali|rahisi|ununua|uza|lipa|fedha|benki|biashara|soko|mazao|kilimo|mvua|jembe|ekari|mazingira|hewa|maji|udongo|mmea|mti|tunda|mboga|mahindi|mchele|unga|sukari|chumvi|mafuta|nyama|maziwa|mayai|mkate|chai|kahawa|maji|pombe|karamu|sherehe|harusi|mazishi|ibada|sala|dua|mungu|roho|moyo|akili|mwili|mkono|mguu|kichwa|macho|masikio|mdomo|pua|meno|nywele|ngozi|damu|pumzi|sauti|maneno|lugha|tabia|desturi|utamaduni|elimu|ujuzi|uzoefu|maisha|ulimwengu|dunia|Afrika|Kenya|Tanzania|Uganda|Rwanda|Burundi|Somalia|Ethiopia)\b/.test(lower)) return "Swahili";
+
+  return "English"; // default
+}
+
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listening, setListening] = useState(false);
@@ -31,7 +57,26 @@ export default function DashboardPage() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState("");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  
+  const [detectedLang, setDetectedLang] = useState("");
+  const [sourceLang, setSourceLang] = useState({ code: "en", label: "English", flag: "🇬🇧" });
+ useEffect(() => {
+  if (!inputText.trim()) {
+    setDetectedLang("");
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    // Use browser's Intl to detect language
+    try {
+      const detected = detectLangFromText(inputText);
+      setDetectedLang(detected);
+    } catch {
+      setDetectedLang("unknown");
+    }
+  }, 600);
+
+  return () => clearTimeout(timer);
+}, [inputText]);
 
   const toggleListening = () => {
     setListening(!listening);
@@ -52,15 +97,31 @@ export default function DashboardPage() {
 
   const handleTranslate = async () => {
   if (!inputText.trim()) return;
+   console.log("Detected lang:", detectedLang); 
+  console.log("Source lang code:", sourceLang.code); 
+  console.log("Target lang:", selectedLang.code);
   setIsTranslating(true);
   setTranslationError("");
 
-  const data = await translate(inputText, "auto", selectedLang.code);
+  // Use detected language if available, otherwise use dropdown selection
+  const sourceLangCode = detectedLang === "Swahili" ? "sw"
+    : detectedLang === "French" ? "fr"
+    : detectedLang === "Spanish" ? "es"
+    : detectedLang === "German" ? "de"
+    : detectedLang === "Portuguese" ? "pt"
+    : detectedLang === "Italian" ? "it"
+    : detectedLang === "Arabic" ? "ar"
+    : detectedLang === "Chinese" ? "zh"
+    : sourceLang.code; // fallback to dropdown
+
+  const data = await translate(inputText, sourceLangCode, selectedLang.code);
+  console.log("Final sourceLangCode:", sourceLangCode);
 
   setIsTranslating(false);
 
   if (data.translated_text) {
     setTranslatedText(data.translated_text);
+    setDetectedLang(detectedLang);
   } else {
     setTranslationError("Translation failed. Please try again.");
   }
@@ -221,7 +282,7 @@ export default function DashboardPage() {
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "14px" }}>
                 <span style={{ color: "var(--accent)", fontWeight: "600", fontSize: "14px" }}>Original Speech</span>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  Detected: <span style={{ color: "var(--success)" }}>English</span>
+                  Detected: <span style={{ color: "var(--success)" }}>{detectedLang || "English"}</span>
                 </span>
               </div>
               <textarea

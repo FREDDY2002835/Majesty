@@ -62,15 +62,13 @@ const detectLanguage = async (req, res) => {
   }
 
   try {
-    // Detect by translating to English and checking the response
-    const response = await axios.get('https://api.mymemory.translated.net/get', {
-      params: {
-        q: text,
-        langpair: '|en'
-      }
-    });
+    const response = await axios.post(
+      'https://lingua-api.com/api/detect',
+      { text },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
 
-    const detected = response.data.responseData.detectedLanguage || 'unknown';
+    const detected = response.data.language || 'unknown';
     res.json({ detected_language: detected });
 
   } catch (err) {
