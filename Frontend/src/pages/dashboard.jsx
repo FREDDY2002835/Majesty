@@ -4,6 +4,7 @@ import WaveForm from "../components/WaveForm";
 import { translate, getHistory, detectLanguage } from "../api";
 
 
+
 const languages = [
   { code: "af", label: "Afrikaans", flag: "🇿🇦" },
   { code: "sq", label: "Albanian", flag: "🇦🇱" },
@@ -104,12 +105,6 @@ const languages = [
   { code: "zu", label: "Zulu", flag: "🇿🇦" },
 ];
 
-const history = [
-  { original: "How much is this?", translated: "Combien ça coûte?", from: "English", to: "French", time: "10:45 AM" },
-  { original: "Where is the nearest hotel?", translated: "Où est l'hôtel le plus proche?", from: "English", to: "French", time: "10:30 AM" },
-  { original: "Thank you very much!", translated: "Merci beaucoup!", from: "English", to: "French", time: "10:15 AM" },
-];
-
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -126,6 +121,16 @@ export default function DashboardPage() {
   const [detectedLang, setDetectedLang] = useState("");
   const [sourceLang, setSourceLang] = useState({ code: "en", label: "English", flag: "🇬🇧" });
   const [langSearch, setLangSearch] = useState("");
+  const [recentHistory, setRecentHistory] = useState([]);
+
+  useEffect(() => {
+  getHistory().then(data => {
+    if (data.translations) {
+      setRecentHistory(data.translations.slice(0, 3));
+    }
+  });
+}, []);
+  
  useEffect(() => {
   if (!inputText.trim()) {
     setDetectedLang("");
@@ -134,6 +139,7 @@ export default function DashboardPage() {
 
   const timer = setTimeout(async () => {
     const data = await detectLanguage(inputText);
+    console.log("Detection response:", data);
     if (data.detected_language) {
       setDetectedLang(data.detected_language);
       setSourceLang({ code: data.code, label: data.detected_language, flag: "" });
@@ -378,7 +384,11 @@ export default function DashboardPage() {
               <textarea
                 placeholder="Type something to translate..."
                 value={inputText}
-                onChange={e => setInputText(e.target.value)}
+                onChange={e => {
+                  if (e.target.value.length <= 500) {
+                    setInputText(e.target.value);
+                  }
+                }}
                 style={{
                   width: "100%", minHeight: "80px",
                   background: "transparent", border: "none",
@@ -387,6 +397,14 @@ export default function DashboardPage() {
                   marginBottom: "20px", fontFamily: "inherit",
                 }}
               />
+              <p style={{ 
+              fontSize: "11px", 
+              color: inputText.length > 450 ? "#ef4444" : "var(--text-muted)",
+              textAlign: "right",
+              marginTop: "4px"
+            }}>
+              {inputText.length}/500
+            </p>
               <WaveForm active={listening} />
             </div>
 
@@ -553,45 +571,34 @@ export default function DashboardPage() {
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              {history.map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr auto",
-                    alignItems: "center",
-                    gap: "16px",
-                    padding: "14px 12px",
-                    borderRadius: "var(--radius-sm)",
-                    transition: "background 0.15s",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = "var(--bg-hover)"}
-                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                >
-                  <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>{item.original}</span>
-                  <div>
-                    <p style={{ fontSize: "14px", color: "var(--text-primary)", marginBottom: "2px" }}>{item.translated}</p>
-                    <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{item.from} → {item.to}</p>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontSize: "12px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>{item.time}</span>
-                    <button
-                      onClick={() => setStarred(s => ({ ...s, [i]: !s[i] }))}
-                      style={{ background: "none", border: "none", color: starred[i] ? "#facc15" : "var(--text-muted)", cursor: "pointer", padding: 0 }}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill={starred[i] ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                      </svg>
-                    </button>
-                    <button style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
+             {recentHistory.length === 0 ? (
+  <p style={{ color: "var(--text-muted)", fontSize: "13px", textAlign: "center", padding: "20px" }}>
+    No translations yet. Start translating!
+  </p>
+) : (
+  recentHistory.map((item, i) => (
+    <div key={item.id} style={{
+      display: "flex", justifyContent: "space-between",
+      alignItems: "center", padding: "14px 0",
+      borderBottom: i < recentHistory.length - 1 ? "1px solid var(--border)" : "none"
+    }}>
+      <span style={{ fontSize: "14px", color: "var(--text-primary)", flex: 1 }}>
+        {item.original_text}
+      </span>
+      <div style={{ flex: 1, textAlign: "center" }}>
+        <p style={{ fontSize: "14px", color: "var(--text-primary)" }}>
+          {item.translated_text}
+        </p>
+        <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+          {item.source_language} → {item.target_language}
+        </p>
+      </div>
+      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+        {new Date(item.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      </span>
+    </div>
+  ))
+)}
             </div>
 
             {/* View all */}

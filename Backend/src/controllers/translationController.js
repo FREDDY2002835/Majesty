@@ -55,6 +55,7 @@ const translateText = async (req, res) => {
 };
 
 const detectLanguage = async (req, res) => {
+  
   const { text } = req.body;
 
   if (!text) {
@@ -71,36 +72,67 @@ const detectLanguage = async (req, res) => {
 
     console.log('MyMemory detect response:', JSON.stringify(response.data, null, 2));
 
-    const detectedCode = response.data.responseData?.detectedLanguage || 'en';
+   const detectedCode = response.data.responseData?.detectedLanguage || 'en';
 
-    // Map code to full name
-    const languageNames = {
-      'en': 'English', 'fr': 'French', 'es': 'Spanish',
-      'de': 'German', 'it': 'Italian', 'pt': 'Portuguese',
-      'ru': 'Russian', 'zh': 'Chinese', 'ja': 'Japanese',
-      'ko': 'Korean', 'ar': 'Arabic', 'hi': 'Hindi',
-      'sw': 'Swahili', 'zu': 'Zulu', 'af': 'Afrikaans',
-      'nl': 'Dutch', 'pl': 'Polish', 'tr': 'Turkish',
-      'uk': 'Ukrainian', 'vi': 'Vietnamese', 'th': 'Thai',
-      'id': 'Indonesian', 'ms': 'Malay', 'fa': 'Persian',
-      'he': 'Hebrew', 'bn': 'Bengali', 'ta': 'Tamil',
-      'te': 'Telugu', 'mr': 'Marathi', 'ur': 'Urdu',
-      'pa': 'Punjabi', 'gu': 'Gujarati', 'kn': 'Kannada',
-      'ml': 'Malayalam', 'si': 'Sinhala', 'ne': 'Nepali',
-      'my': 'Myanmar', 'km': 'Khmer', 'lo': 'Lao',
-      'ka': 'Georgian', 'am': 'Amharic', 'so': 'Somali',
-      'ha': 'Hausa', 'yo': 'Yoruba', 'ig': 'Igbo',
-      'mg': 'Malagasy', 'ny': 'Nyanja', 'sn': 'Shona',
-      'st': 'Sesotho', 'xh': 'Xhosa', 'zu': 'Zulu',
-    };
+// Normalize all region-specific codes to base language codes
+const codeMap = {
+  'zh-CN': 'zh', 'zh-TW': 'zh', 'zh-HK': 'zh',
+  'pt-BR': 'pt', 'pt-PT': 'pt',
+  'en-US': 'en', 'en-GB': 'en', 'en-AU': 'en',
+  'es-ES': 'es', 'es-MX': 'es', 'es-419': 'es',
+  'fr-FR': 'fr', 'fr-CA': 'fr', 'fr-BE': 'fr',
+  'de-DE': 'de', 'de-AT': 'de', 'de-CH': 'de',
+  'it-IT': 'it', 'it-CH': 'it',
+  'nl-NL': 'nl', 'nl-BE': 'nl',
+  'ar-SA': 'ar', 'ar-EG': 'ar', 'ar-MA': 'ar',
+  'sw-KE': 'sw', 'sw-TZ': 'sw',
+  'sr-Cyrl': 'sr', 'sr-Latn': 'sr',
+  'uz-Cyrl': 'uz', 'uz-Latn': 'uz',
+  'mn-Cyrl': 'mn', 'mn-Mong': 'mn',
+  'hy-AM': 'hy', 'ka-GE': 'ka',
+  'nb-NO': 'no', 'nn-NO': 'no',
+  'fil': 'tl',
+};
 
-    const detectedName = languageNames[detectedCode] || 'English';
+const normalizedCode = codeMap[detectedCode] || detectedCode.split('-')[0];
 
-    res.json({
-      detected_language: detectedName,
-      code: detectedCode
-    });
+const languageNames = {
+  'en': 'English', 'fr': 'French', 'es': 'Spanish',
+  'de': 'German', 'it': 'Italian', 'pt': 'Portuguese',
+  'ru': 'Russian', 'zh': 'Chinese', 'ja': 'Japanese',
+  'ko': 'Korean', 'ar': 'Arabic', 'hi': 'Hindi',
+  'sw': 'Swahili', 'zu': 'Zulu', 'af': 'Afrikaans',
+  'nl': 'Dutch', 'pl': 'Polish', 'tr': 'Turkish',
+  'uk': 'Ukrainian', 'vi': 'Vietnamese', 'th': 'Thai',
+  'id': 'Indonesian', 'ms': 'Malay', 'fa': 'Persian',
+  'he': 'Hebrew', 'bn': 'Bengali', 'ta': 'Tamil',
+  'te': 'Telugu', 'mr': 'Marathi', 'ur': 'Urdu',
+  'pa': 'Punjabi', 'gu': 'Gujarati', 'kn': 'Kannada',
+  'ml': 'Malayalam', 'si': 'Sinhala', 'ne': 'Nepali',
+  'my': 'Myanmar', 'km': 'Khmer', 'lo': 'Lao',
+  'ka': 'Georgian', 'am': 'Amharic', 'so': 'Somali',
+  'ha': 'Hausa', 'yo': 'Yoruba', 'ig': 'Igbo',
+  'mg': 'Malagasy', 'ny': 'Nyanja', 'sn': 'Shona',
+  'st': 'Sesotho', 'xh': 'Xhosa', 'tl': 'Filipino',
+  'no': 'Norwegian', 'sv': 'Swedish', 'da': 'Danish',
+  'fi': 'Finnish', 'hu': 'Hungarian', 'cs': 'Czech',
+  'sk': 'Slovak', 'ro': 'Romanian', 'bg': 'Bulgarian',
+  'hr': 'Croatian', 'sr': 'Serbian', 'sl': 'Slovenian',
+  'et': 'Estonian', 'lv': 'Latvian', 'lt': 'Lithuanian',
+  'el': 'Greek', 'sq': 'Albanian', 'mk': 'Macedonian',
+  'hy': 'Armenian', 'az': 'Azerbaijani', 'kk': 'Kazakh',
+  'uz': 'Uzbek', 'tk': 'Turkmen', 'mn': 'Mongolian',
+  'mt': 'Maltese', 'ga': 'Irish', 'cy': 'Welsh',
+  'eu': 'Basque', 'ca': 'Catalan', 'gl': 'Galician',
+  'lb': 'Luxembourgish', 'is': 'Icelandic',
+};
 
+const detectedName = languageNames[normalizedCode] || 'English';
+
+res.json({
+  detected_language: detectedName,
+  code: normalizedCode
+});
   } catch (err) {
     console.error('Detect error:', err.message);
     res.json({ detected_language: 'English', code: 'en' });
