@@ -1,38 +1,75 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { getMe, updateMe, clearHistory, deleteHistoryItem } from "../api";
 
+// Add clearHistory and deleteMe to api.js if not already there
+const deleteMe = () =>
+  fetch("http://localhost:5000/api/auth/me", {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  }).then(r => r.json());
+
+const clearAllHistory = () =>
+  fetch("http://localhost:5000/api/translate/history", {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  }).then(r => r.json());
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profile, setProfile] = useState({
-    name: "Frederick Muhimuzi",
-    email: "frederick@example.com",
-    password: "",
-  });
-
-  const [languages, setLanguages] = useState({
-    source: "English",
-    target: "French",
-  });
-
-  const [audio, setAudio] = useState({
-    speed: "Normal",
-    volume: 80,
-    autoPlay: true,
-    bluetooth: false,
-  });
-
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: false,
-    history: true,
-  });
-
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState({ name: "", email: "", password: "" });
   const [saved, setSaved] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const handleSave = () => {
+  const [languages, setLanguages] = useState({ source: "English", target: "French" });
+  const [audio, setAudio] = useState({ speed: "Normal", volume: 80, autoPlay: true, bluetooth: false });
+  const [notifications, setNotifications] = useState({ email: true, push: false, history: true });
+
+  useEffect(() => {
+    getMe().then(data => {
+      if (data.user) {
+        setProfile({ name: data.user.name, email: data.user.email, password: "" });
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  const handleSave = async () => {
+    const updates = { name: profile.name };
+    const data = await updateMe(updates);
+    if (data.user) {
+      const stored = JSON.parse(localStorage.getItem("user") || "{}");
+      localStorage.setItem("user", JSON.stringify({ ...stored, name: data.user.name }));
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const handleClearHistory = async () => {
+    const confirmed = window.confirm("Are you sure you want to clear all translation history? This cannot be undone.");
+    if (!confirmed) return;
+    await clearAllHistory();
+    alert("Translation history cleared.");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    await deleteMe();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   const sourceLanguages = ["English", "French", "Spanish", "German", "Chinese", "Arabic", "Swahili", "Portuguese"];
@@ -41,26 +78,26 @@ export default function SettingsPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
-    
-            {sidebarOpen && (
-              <div onClick={() => setSidebarOpen(false)} style={{
-                position: "fixed", inset: 0,
-                background: "rgba(0,0,0,0.6)", zIndex: 20,
-              }} />
-            )}
-    
-            <div style={{
-              position: "fixed", top: 0, left: 0,
-              height: "100vh", zIndex: 30,
-              transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
-              transition: "transform 0.3s ease",
-            }}>
-              <Sidebar onClose={() => setSidebarOpen(false)} />
-        </div>
+
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{
+          position: "fixed", inset: 0,
+          background: "rgba(0,0,0,0.6)", zIndex: 20,
+        }} />
+      )}
+
+      <div style={{
+        position: "fixed", top: 0, left: 0,
+        height: "100vh", zIndex: 30,
+        transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+        transition: "transform 0.3s ease",
+      }}>
+        <Sidebar onClose={() => setSidebarOpen(false)} />
+      </div>
 
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
+
         {/* Header */}
-        
         <header style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
@@ -75,7 +112,7 @@ export default function SettingsPage() {
               <line x1="3" y1="12" x2="21" y2="12"/>
               <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
-        </button>
+          </button>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: "700", color: "var(--text-primary)" }}>
             Settings
           </h1>
@@ -102,33 +139,37 @@ export default function SettingsPage() {
               <circle cx="12" cy="7" r="4"/>
             </svg>
           }>
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <Field label="Full Name">
-                <input
-                  type="text"
-                  value={profile.name}
-                  onChange={e => setProfile({ ...profile, name: e.target.value })}
-                  style={inputStyle}
-                />
-              </Field>
-              <Field label="Email Address">
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={e => setProfile({ ...profile, email: e.target.value })}
-                  style={inputStyle}
-                />
-              </Field>
-              <Field label="New Password">
-                <input
-                  type="password"
-                  placeholder="Leave blank to keep current"
-                  value={profile.password}
-                  onChange={e => setProfile({ ...profile, password: e.target.value })}
-                  style={inputStyle}
-                />
-              </Field>
-            </div>
+            {loading ? (
+              <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>Loading...</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <Field label="Full Name">
+                  <input
+                    type="text"
+                    value={profile.name}
+                    onChange={e => setProfile({ ...profile, name: e.target.value })}
+                    style={inputStyle}
+                  />
+                </Field>
+                <Field label="Email Address">
+                  <input
+                    type="email"
+                    value={profile.email}
+                    disabled
+                    style={{ ...inputStyle, opacity: 0.6, cursor: "not-allowed" }}
+                  />
+                </Field>
+                <Field label="New Password">
+                  <input
+                    type="password"
+                    placeholder="Leave blank to keep current"
+                    value={profile.password}
+                    onChange={e => setProfile({ ...profile, password: e.target.value })}
+                    style={inputStyle}
+                  />
+                </Field>
+              </div>
+            )}
           </Section>
 
           {/* Language Settings */}
@@ -170,8 +211,6 @@ export default function SettingsPage() {
             </svg>
           }>
             <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-
-              {/* Speed */}
               <Field label="Translation Voice Speed">
                 <div style={{ display: "flex", gap: "8px" }}>
                   {speedOptions.map(s => (
@@ -191,8 +230,6 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </Field>
-
-              {/* Volume */}
               <Field label={`Volume — ${audio.volume}%`}>
                 <input
                   type="range" min="0" max="100"
@@ -201,8 +238,6 @@ export default function SettingsPage() {
                   style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
                 />
               </Field>
-
-              {/* Toggles */}
               <Toggle
                 label="Auto-play Translation"
                 description="Automatically play translation audio after recognition"
@@ -247,7 +282,7 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-          {/* Danger Zone */}
+          {/* Account Section */}
           <Section title="Account" icon={
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10"/>
@@ -255,32 +290,74 @@ export default function SettingsPage() {
               <line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
           }>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "4px" }}>
-                Danger zone — these actions cannot be undone.
-              </p>
-              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                <button style={{
-                  padding: "10px 20px", background: "transparent",
-                  border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
-                  color: "var(--text-secondary)", fontSize: "14px", cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              {/* Logout */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <p style={{ fontSize: "14px", color: "var(--text-primary)", marginBottom: "2px" }}>Log Out</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Sign out of your Majesty account</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    padding: "10px 20px", background: "transparent",
+                    border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
+                    color: "var(--text-secondary)", fontSize: "14px", cursor: "pointer",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
                 >
-                  Clear All History
-                </button>
-                <button style={{
-                  padding: "10px 20px", background: "rgba(239,68,68,0.1)",
-                  border: "1px solid #ef4444", borderRadius: "var(--radius-sm)",
-                  color: "#ef4444", fontSize: "14px", cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                >
-                  Delete Account
+                  Log Out
                 </button>
               </div>
+
+              <div style={{ height: "1px", background: "var(--border)" }} />
+
+              <p style={{ fontSize: "13px", color: "#ef4444", fontWeight: "600" }}>
+                Danger Zone
+              </p>
+
+              {/* Clear history */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <p style={{ fontSize: "14px", color: "var(--text-primary)", marginBottom: "2px" }}>Clear All History</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Permanently delete all your translation history</p>
+                </div>
+                <button
+                  onClick={handleClearHistory}
+                  style={{
+                    padding: "10px 20px", background: "transparent",
+                    border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
+                    color: "var(--text-secondary)", fontSize: "14px", cursor: "pointer",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
+                >
+                  Clear History
+                </button>
+              </div>
+
+              {/* Delete account */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <p style={{ fontSize: "14px", color: "var(--text-primary)", marginBottom: "2px" }}>Delete Account</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>Permanently delete your account and all data</p>
+                </div>
+                <button
+                  onClick={handleDeleteAccount}
+                  style={{
+                    padding: "10px 20px",
+                    background: confirmDelete ? "#ef4444" : "rgba(239,68,68,0.1)",
+                    border: "1px solid #ef4444", borderRadius: "var(--radius-sm)",
+                    color: confirmDelete ? "white" : "#ef4444",
+                    fontSize: "14px", cursor: "pointer", transition: "all 0.2s",
+                  }}
+                >
+                  {confirmDelete ? "Click again to confirm" : "Delete Account"}
+                </button>
+              </div>
+
             </div>
           </Section>
 
@@ -290,7 +367,6 @@ export default function SettingsPage() {
   );
 }
 
-// Reusable Section wrapper
 function Section({ title, icon, children }) {
   return (
     <div style={{
@@ -314,7 +390,6 @@ function Section({ title, icon, children }) {
   );
 }
 
-// Reusable Field wrapper
 function Field({ label, children, style }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px", ...style }}>
@@ -326,7 +401,6 @@ function Field({ label, children, style }) {
   );
 }
 
-// Reusable Toggle
 function Toggle({ label, description, checked, onChange }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
