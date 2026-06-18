@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
-import { translate, getHistory, detectLanguage } from "../api";
+import { translate, getHistory, detectLanguage, deleteHistoryItem } from "../api";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -122,6 +123,7 @@ export default function DashboardPage() {
   const [sourceLang, setSourceLang] = useState({ code: "en", label: "English", flag: "🇬🇧" });
   const [langSearch, setLangSearch] = useState("");
   const [recentHistory, setRecentHistory] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
   getHistory().then(data => {
@@ -319,51 +321,51 @@ export default function DashboardPage() {
                 </svg>
               </button>
               {showLangDropdown && (
-  <div style={{
-    position: "absolute", top: "calc(100% + 4px)", right: 0,
-    background: "var(--bg-card)", border: "1px solid var(--border)",
-    borderRadius: "var(--radius-sm)", zIndex: 20,
-    width: "220px", boxShadow: "var(--shadow)",
-  }}>
-    {/* Search bar */}
-    <div style={{ padding: "8px", borderBottom: "1px solid var(--border)" }}>
-      <input
-        type="text"
-        placeholder="Search language..."
-        value={langSearch}
-        onChange={e => setLangSearch(e.target.value)}
-        style={{
-          width: "100%", padding: "8px 10px",
-          background: "var(--bg-secondary)", border: "1px solid var(--border)",
-          borderRadius: "var(--radius-sm)", color: "var(--text-primary)",
-          fontSize: "13px", outline: "none",
-        }}
-      />
-    </div>
+                <div style={{
+                  position: "absolute", top: "calc(100% + 4px)", right: 0,
+                  background: "var(--bg-card)", border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-sm)", zIndex: 20,
+                  width: "220px", boxShadow: "var(--shadow)",
+                }}>
+                  {/* Search bar */}
+                  <div style={{ padding: "8px", borderBottom: "1px solid var(--border)" }}>
+                    <input
+                      type="text"
+                      placeholder="Search language..."
+                      value={langSearch}
+                      onChange={e => setLangSearch(e.target.value)}
+                      style={{
+                        width: "100%", padding: "8px 10px",
+                        background: "var(--bg-secondary)", border: "1px solid var(--border)",
+                        borderRadius: "var(--radius-sm)", color: "var(--text-primary)",
+                        fontSize: "13px", outline: "none",
+                      }}
+                    />
+                  </div>
 
-    {/* Scrollable list */}
-    <div style={{ maxHeight: "240px", overflowY: "auto" }}>
-      {languages
-        .filter(l => l.label.toLowerCase().includes(langSearch.toLowerCase()))
-        .map(lang => (
-          <button
-            key={lang.code}
-            onClick={() => { setSelectedLang(lang); setShowLangDropdown(false); setLangSearch(""); }}
-            style={{
-              display: "flex", alignItems: "center", gap: "10px",
-              width: "100%", padding: "10px 14px", background: "none",
-              border: "none",
-              color: lang.code === selectedLang.code ? "white" : "var(--text-secondary)",
-              backgroundColor: lang.code === selectedLang.code ? "var(--accent)" : "transparent",
-              fontSize: "13px", cursor: "pointer", textAlign: "left",
-            }}
-          >
-            {lang.flag} {lang.label}
-          </button>
-        ))}
-    </div>
-  </div>
-)}
+                  {/* Scrollable list */}
+                  <div style={{ maxHeight: "240px", overflowY: "auto" }}>
+                    {languages
+                      .filter(l => l.label.toLowerCase().includes(langSearch.toLowerCase()))
+                      .map(lang => (
+                        <button
+                          key={lang.code}
+                          onClick={() => { setSelectedLang(lang); setShowLangDropdown(false); setLangSearch(""); }}
+                          style={{
+                            display: "flex", alignItems: "center", gap: "10px",
+                            width: "100%", padding: "10px 14px", background: "none",
+                            border: "none",
+                            color: lang.code === selectedLang.code ? "white" : "var(--text-secondary)",
+                            backgroundColor: lang.code === selectedLang.code ? "var(--accent)" : "transparent",
+                            fontSize: "13px", cursor: "pointer", textAlign: "left",
+                          }}
+                        >
+                          {lang.flag} {lang.label}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -558,69 +560,94 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Recent History */}
-          <div style={{
-            background: "var(--bg-card)", border: "1px solid var(--border)",
-            borderRadius: "var(--radius)", padding: "20px",
-          }}>
-            <h2 style={{
-              fontFamily: "var(--font-display)", fontSize: "16px",
-              fontWeight: "600", marginBottom: "16px", color: "var(--accent)",
-            }}>
-              Recent History
-            </h2>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-             {recentHistory.length === 0 ? (
-  <p style={{ color: "var(--text-muted)", fontSize: "13px", textAlign: "center", padding: "20px" }}>
-    No translations yet. Start translating!
-  </p>
-) : (
-  recentHistory.map((item, i) => (
-    <div key={item.id} style={{
-      display: "flex", justifyContent: "space-between",
-      alignItems: "center", padding: "14px 0",
-      borderBottom: i < recentHistory.length - 1 ? "1px solid var(--border)" : "none"
-    }}>
-      <span style={{ fontSize: "14px", color: "var(--text-primary)", flex: 1 }}>
-        {item.original_text}
-      </span>
-      <div style={{ flex: 1, textAlign: "center" }}>
-        <p style={{ fontSize: "14px", color: "var(--text-primary)" }}>
-          {item.translated_text}
-        </p>
-        <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-          {item.source_language} → {item.target_language}
-        </p>
-      </div>
-      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-        {new Date(item.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-      </span>
-    </div>
-  ))
-)}
-            </div>
-
-            {/* View all */}
-            <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <button style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                padding: "10px 20px", background: "var(--bg-secondary)",
-                border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
-                color: "var(--text-secondary)", fontSize: "13px", cursor: "pointer",
-                transition: "all 0.2s",
+         {/* Recent History */}
+              <div style={{
+                background: "var(--bg-card)",
+                borderRadius: "var(--radius)",
+                border: "1px solid var(--border)",
+                padding: "20px",
+                marginTop: "20px"
               }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-                  <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-                </svg>
-                View All History
-              </button>
-            </div>
-          </div>
+
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <span style={{ color: "var(--accent)", fontWeight: "600", fontSize: "15px" }}>
+                    Recent History
+                  </span>
+                  <button
+                    onClick={() => navigate("/dashboard/history")}
+                    style={{
+                      background: "none", border: "1px solid var(--border)",
+                      borderRadius: "var(--radius-sm)", padding: "6px 14px",
+                      color: "var(--text-secondary)", fontSize: "12px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    View All History
+                  </button>
+                </div>
+
+                {/* History items */}
+                {recentHistory.length === 0 ? (
+                  <p style={{ color: "var(--text-muted)", fontSize: "13px", textAlign: "center", padding: "20px" }}>
+                    No translations yet. Start translating!
+                  </p>
+                ) : (
+                  recentHistory.map((item, i) => (
+                    <div key={item.id} style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                      padding: "14px 0",
+                      borderBottom: i < recentHistory.length - 1 ? "1px solid var(--border)" : "none"
+                    }}>
+
+                      {/* Original text */}
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: "14px", color: "var(--text-primary)", marginBottom: "2px" }}>
+                          {item.original_text}
+                        </p>
+                        <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                          {item.source_language} → {item.target_language}
+                        </p>
+                      </div>
+
+                      {/* Translated text */}
+                      <div style={{ flex: 1, textAlign: "center" }}>
+                        <p style={{ fontSize: "14px", color: "var(--text-primary)" }}>
+                          {item.translated_text}
+                        </p>
+                      </div>
+
+                      {/* Date + time + delete */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span style={{ fontSize: "11px", color: "var(--text-muted)", textAlign: "right" }}>
+                          {new Date(item.created_at).toLocaleDateString([], { month: "short", day: "numeric" })}
+                          {" "}
+                          {new Date(item.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                        <button
+                          onClick={async () => {
+                            await deleteHistoryItem(item.id);
+                            setRecentHistory(prev => prev.filter(h => h.id !== item.id));
+                          }}
+                          style={{
+                            background: "none", border: "none", cursor: "pointer",
+                            color: "#ef4444", fontSize: "16px", padding: "4px",
+                            lineHeight: 1
+                          }}
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+
+                    </div>
+                  ))
+                )}
+
+              </div>
 
         </main>
       </div>
     </div>
   );
-}
+} 
