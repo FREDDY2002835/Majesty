@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import ReactCountryFlag from "react-country-flag";
+import { GB, FR, ES, CN, SA, KE } from "country-flag-icons/react/3x2";
 
 const BASE_URL = "http://localhost:5000/api";
 
@@ -19,86 +21,86 @@ export default function LanguagesPage() {
     getSupportedLanguages().then(data => {
       if (data.languages) {
         const extras = {
-          en: { native: "English", speakers: "1.5B", flag: "🇬🇧" },
-          fr: { native: "Français", speakers: "280M", flag: "🇫🇷" },
-          es: { native: "Español", speakers: "500M", flag: "🇪🇸" },
-          de: { native: "Deutsch", speakers: "100M", flag: "🇩🇪" },
-          zh: { native: "中文", speakers: "1.1B", flag: "🇨🇳" },
-          ar: { native: "العربية", speakers: "420M", flag: "🇸🇦" },
-          sw: { native: "Kiswahili", speakers: "200M", flag: "🇰🇪" },
-          pt: { native: "Português", speakers: "260M", flag: "🇧🇷" },
-          hi: { native: "हिन्दी", speakers: "600M", flag: "🇮🇳" },
-          ru: { native: "Русский", speakers: "258M", flag: "🇷🇺" },
-          ja: { native: "日本語", speakers: "125M", flag: "🇯🇵" },
-          ko: { native: "한국어", speakers: "77M", flag: "🇰🇷" },
-          it: { native: "Italiano", speakers: "85M", flag: "🇮🇹" },
-          tr: { native: "Türkçe", speakers: "88M", flag: "🇹🇷" },
-          nl: { native: "Nederlands", speakers: "24M", flag: "🇳🇱" },
-          pl: { native: "Polski", speakers: "45M", flag: "🇵🇱" },
-          af: { native: "Afrikaans", speakers: "7M", flag: "🇿🇦" },
-          sq: { native: "Shqip", speakers: "7M", flag: "🇦🇱" },
-          hy: { native: "Հայերեն", speakers: "7M", flag: "🇦🇲" },
-          az: { native: "Azərbaycan", speakers: "23M", flag: "🇦🇿" },
-          bn: { native: "বাংলা", speakers: "230M", flag: "🇧🇩" },
-          bg: { native: "Български", speakers: "9M", flag: "🇧🇬" },
-          ca: { native: "Català", speakers: "10M", flag: "🇪🇸" },
-          hr: { native: "Hrvatski", speakers: "7M", flag: "🇭🇷" },
-          cs: { native: "Čeština", speakers: "10M", flag: "🇨🇿" },
-          da: { native: "Dansk", speakers: "6M", flag: "🇩🇰" },
-          et: { native: "Eesti", speakers: "1M", flag: "🇪🇪" },
-          tl: { native: "Filipino", speakers: "90M", flag: "🇵🇭" },
-          fi: { native: "Suomi", speakers: "5M", flag: "🇫🇮" },
-          ka: { native: "ქართული", speakers: "4M", flag: "🇬🇪" },
-          el: { native: "Ελληνικά", speakers: "13M", flag: "🇬🇷" },
-          gu: { native: "ગુજરાતી", speakers: "55M", flag: "🇮🇳" },
-          he: { native: "עברית", speakers: "9M", flag: "🇮🇱" },
-          hu: { native: "Magyar", speakers: "13M", flag: "🇭🇺" },
-          is: { native: "Íslenska", speakers: "400K", flag: "🇮🇸" },
-          id: { native: "Bahasa Indonesia", speakers: "270M", flag: "🇮🇩" },
-          ga: { native: "Gaeilge", speakers: "2M", flag: "🇮🇪" },
-          km: { native: "ភាសាខ្មែរ", speakers: "16M", flag: "🇰🇭" },
-          kk: { native: "Қазақша", speakers: "13M", flag: "🇰🇿" },
-          lv: { native: "Latviešu", speakers: "2M", flag: "🇱🇻" },
-          lt: { native: "Lietuvių", speakers: "3M", flag: "🇱🇹" },
-          mk: { native: "Македонски", speakers: "2M", flag: "🇲🇰" },
-          ms: { native: "Bahasa Melayu", speakers: "290M", flag: "🇲🇾" },
-          mt: { native: "Malti", speakers: "500K", flag: "🇲🇹" },
-          mi: { native: "Māori", speakers: "200K", flag: "🇳🇿" },
-          mn: { native: "Монгол", speakers: "5M", flag: "🇲🇳" },
-          ne: { native: "नेपाली", speakers: "17M", flag: "🇳🇵" },
-          no: { native: "Norsk", speakers: "5M", flag: "🇳🇴" },
-          fa: { native: "فارسی", speakers: "110M", flag: "🇮🇷" },
-          ro: { native: "Română", speakers: "24M", flag: "🇷🇴" },
-          sr: { native: "Српски", speakers: "12M", flag: "🇷🇸" },
-          sk: { native: "Slovenčina", speakers: "5M", flag: "🇸🇰" },
-          sl: { native: "Slovenščina", speakers: "2M", flag: "🇸🇮" },
-          so: { native: "Soomaali", speakers: "22M", flag: "🇸🇴" },
-          sv: { native: "Svenska", speakers: "10M", flag: "🇸🇪" },
-          ta: { native: "தமிழ்", speakers: "75M", flag: "🇮🇳" },
-          te: { native: "తెలుగు", speakers: "83M", flag: "🇮🇳" },
-          th: { native: "ภาษาไทย", speakers: "60M", flag: "🇹🇭" },
-          uk: { native: "Українська", speakers: "40M", flag: "🇺🇦" },
-          ur: { native: "اردو", speakers: "230M", flag: "🇵🇰" },
-          vi: { native: "Tiếng Việt", speakers: "95M", flag: "🇻🇳" },
-          cy: { native: "Cymraeg", speakers: "900K", flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿" },
-          zu: { native: "isiZulu", speakers: "12M", flag: "🇿🇦" },
-          xh: { native: "isiXhosa", speakers: "8M", flag: "🇿🇦" },
-          yo: { native: "Yorùbá", speakers: "45M", flag: "🇳🇬" },
-          ig: { native: "Igbo", speakers: "24M", flag: "🇳🇬" },
-          ha: { native: "Hausa", speakers: "63M", flag: "🇳🇬" },
-          my: { native: "မြန်မာ", speakers: "33M", flag: "🇲🇲" },
-          ml: { native: "മലയാളം", speakers: "38M", flag: "🇮🇳" },
-          kn: { native: "ಕನ್ನಡ", speakers: "44M", flag: "🇮🇳" },
-          mr: { native: "मराठी", speakers: "83M", flag: "🇮🇳" },
-          pa: { native: "ਪੰਜਾਬੀ", speakers: "113M", flag: "🇮🇳" },
-          si: { native: "සිංහල", speakers: "17M", flag: "🇱🇰" },
-          uz: { native: "O'zbek", speakers: "35M", flag: "🇺🇿" },
+          en: { native: "English", speakers: "1.5B", countryCode: "GB" },
+          fr: { native: "Français", speakers: "280M", countryCode: "FR" },
+          es: { native: "Español", speakers: "500M", countryCode: "ES" },
+          de: { native: "Deutsch", speakers: "100M", countryCode: "DE" },
+          zh: { native: "中文", speakers: "1.1B", countryCode: "CN" },
+          ar: { native: "العربية", speakers: "420M", countryCode: "SA" },
+          sw: { native: "Kiswahili", speakers: "200M", countryCode: "KE" },
+          pt: { native: "Português", speakers: "260M", countryCode: "BR" },
+          hi: { native: "हिन्दी", speakers: "600M", countryCode: "IN" },
+          ru: { native: "Русский", speakers: "258M", countryCode: "RU" },
+          ja: { native: "日本語", speakers: "125M", countryCode: "JP" },
+          ko: { native: "한국어", speakers: "77M", countryCode: "KR" },
+          it: { native: "Italiano", speakers: "85M", countryCode: "IT" },
+          tr: { native: "Türkçe", speakers: "88M", countryCode: "TR" },
+          nl: { native: "Nederlands", speakers: "24M", countryCode: "NL" },
+          pl: { native: "Polski", speakers: "45M", countryCode: "PL" },
+          af: { native: "Afrikaans", speakers: "7M", countryCode: "ZA" },
+          sq: { native: "Shqip", speakers: "7M", countryCode: "AL" },
+          hy: { native: "Հայերեն", speakers: "7M", countryCode: "AM" },
+          az: { native: "Azərbaycan", speakers: "23M", countryCode: "AZ" },
+          bn: { native: "বাংলা", speakers: "230M", countryCode: "BD" },
+          bg: { native: "Български", speakers: "9M", countryCode: "BG" },
+          ca: { native: "Català", speakers: "10M", countryCode: "ES" },
+          hr: { native: "Hrvatski", speakers: "7M", countryCode: "HR" },
+          cs: { native: "Čeština", speakers: "10M", countryCode: "CZ" },
+          da: { native: "Dansk", speakers: "6M", countryCode: "DK" },
+          et: { native: "Eesti", speakers: "1M", countryCode: "EE" },
+          tl: { native: "Filipino", speakers: "90M", countryCode: "PH" },
+          fi: { native: "Suomi", speakers: "5M", countryCode: "FI" },
+          ka: { native: "ქართული", speakers: "4M", countryCode: "GE" },
+          el: { native: "Ελληνικά", speakers: "13M", countryCode: "GR" },
+          gu: { native: "ગુજરાતી", speakers: "55M", countryCode: "IN" },
+          he: { native: "עברית", speakers: "9M", countryCode: "IL" },
+          hu: { native: "Magyar", speakers: "13M", countryCode: "HU" },
+          is: { native: "Íslenska", speakers: "400K", countryCode: "IS" },
+          id: { native: "Bahasa Indonesia", speakers: "270M", countryCode: "ID" },
+          ga: { native: "Gaeilge", speakers: "2M", countryCode: "IE" },
+          km: { native: "ភាសាខ្មែរ", speakers: "16M", countryCode: "KH" },
+          kk: { native: "Қазақша", speakers: "13M", countryCode: "KZ" },
+          lv: { native: "Latviešu", speakers: "2M", countryCode: "LV" },
+          lt: { native: "Lietuvių", speakers: "3M", countryCode: "LT" },
+          mk: { native: "Македонски", speakers: "2M", countryCode: "MK" },
+          ms: { native: "Bahasa Melayu", speakers: "290M", countryCode: "MY" },
+          mt: { native: "Malti", speakers: "500K", countryCode: "MT" },
+          mi: { native: "Māori", speakers: "200K", countryCode: "NZ" },
+          mn: { native: "Монгол", speakers: "5M", countryCode: "MN" },
+          ne: { native: "नेपाली", speakers: "17M", countryCode: "NP" },
+          no: { native: "Norsk", speakers: "5M", countryCode: "NO" },
+          fa: { native: "فارسی", speakers: "110M", countryCode: "IR" },
+          ro: { native: "Română", speakers: "24M", countryCode: "RO" },
+          sr: { native: "Српски", speakers: "12M", countryCode: "RS" },
+          sk: { native: "Slovenčina", speakers: "5M", countryCode: "SK" },
+          sl: { native: "Slovenščina", speakers: "2M", countryCode: "SI" },
+          so: { native: "Soomaali", speakers: "22M", countryCode: "SO" },
+          sv: { native: "Svenska", speakers: "10M", countryCode: "SE" },
+          ta: { native: "தமிழ்", speakers: "75M", countryCode: "IN" },
+          te: { native: "తెలుగు", speakers: "83M", countryCode: "IN" },
+          th: { native: "ภาษาไทย", speakers: "60M", countryCode: "TH" },
+          uk: { native: "Українська", speakers: "40M", countryCode: "UA" },
+          ur: { native: "اردو", speakers: "230M", countryCode: "PK" },
+          vi: { native: "Tiếng Việt", speakers: "95M", countryCode: "VN" },
+          cy: { native: "Cymraeg", speakers: "900K", countryCode: "🏴󠁧󠁢" },
+          zu: { native: "isiZulu", speakers: "12M", countryCode: "ZA" },
+          xh: { native: "isiXhosa", speakers: "8M", countryCode: "ZA" },
+          yo: { native: "Yorùbá", speakers: "45M", countryCode: "NG" },
+          ig: { native: "Igbo", speakers: "24M", countryCode: "NG" },
+          ha: { native: "Hausa", speakers: "63M", countryCode: "NG" },
+          my: { native: "မြန်မာ", speakers: "33M", countryCode: "MM" },
+          ml: { native: "മലയാളം", speakers: "38M", countryCode: "IN" },
+          kn: { native: "ಕನ್ನಡ", speakers: "44M", countryCode: "IN" },
+          mr: { native: "मराठी", speakers: "83M", countryCode: "IN" },
+          pa: { native: "ਪੰਜਾਬੀ", speakers: "113M", countryCode: "IN" },
+          si: { native: "සිංහල", speakers: "17M", countryCode: "IN" },
+          uz: { native: "O'zbek", speakers: "35M", countryCode: "UZ" },
         };
 
-        const enriched = data.languages.map(l => ({
+        const enriched = data.languages.map((l) => ({
           code: l.code,
           name: l.name,
-          flag: extras[l.code]?.flag || "🌍",
+          countryCode: extras[l.code]?.countryCode,
           native: extras[l.code]?.native || l.name,
           speakers: extras[l.code]?.speakers || "—",
         }));
@@ -138,6 +140,8 @@ export default function LanguagesPage() {
           background: "rgba(0,0,0,0.6)", zIndex: 20,
         }} />
       )}
+
+      
 
       <div style={{
         position: "fixed", top: 0, left: 0,
@@ -228,7 +232,16 @@ export default function LanguagesPage() {
                       transition: "all 0.2s",
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span style={{ fontSize: "28px" }}>{lang.flag}</span>
+                        <ReactCountryFlag
+                          countryCode={lang.countryCode}
+                          svg
+                          style={{
+                            width: "32px",
+                            height: "24px",
+                            borderRadius: "4px",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          }}
+                        />
                         <div>
                           <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)" }}>{lang.name}</p>
                           <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{lang.native}</p>
@@ -287,7 +300,15 @@ export default function LanguagesPage() {
                         transition: "all 0.2s",
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <span style={{ fontSize: "28px" }}>{lang.flag}</span>
+                          <ReactCountryFlag
+                              countryCode={lang.countryCode}
+                              svg
+                              style={{
+                                width: "32px",
+                                height: "24px",
+                                borderRadius: "4px",
+                              }}
+                            />
                           <div>
                             <p style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)" }}>{lang.name}</p>
                             <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{lang.native}</p>
