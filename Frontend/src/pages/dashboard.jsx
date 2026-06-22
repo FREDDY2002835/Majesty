@@ -430,7 +430,7 @@ const playTranslation = () => {
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "14px" }}>
                 <span style={{ color: "var(--accent)", fontWeight: "600", fontSize: "14px" }}>Original Speech</span>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  Detected: <span style={{ color: "var(--success)" }}>{detectedLang || "English"}</span>
+                  Detected: <span style={{ color: "var(--accent)" }}>{detectedLang}</span>
                 </span>
               </div>
               <textarea
