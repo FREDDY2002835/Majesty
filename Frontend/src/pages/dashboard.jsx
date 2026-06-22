@@ -204,6 +204,55 @@ export default function DashboardPage() {
     setTranslationError("Translation failed. Please try again.");
   }
 };
+
+const startListening = () => {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert("Your browser doesn't support speech recognition. Try Chrome.");
+    return;
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = sourceLang.code || 'en';
+
+  recognition.onstart = () => setListening(true);
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    setInputText(transcript);
+    setListening(false);
+  };
+
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+    setListening(false);
+  };
+
+  recognition.onend = () => setListening(false);
+
+  recognition.start();
+  window.currentRecognition = recognition;
+};
+
+const playTranslation = () => {
+  if (!translatedText) {
+    alert("No translation to play yet.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(translatedText);
+  utterance.lang = selectedLang.code;
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  window.speechSynthesis.speak(utterance);
+};
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
 
@@ -417,7 +466,9 @@ export default function DashboardPage() {
               background: "var(--bg-card)", borderTop: "1px solid var(--border)",
               borderBottom: "1px solid var(--border)", padding: "0 4px",
             }}>
-              <button style={{
+              <button 
+              
+              style={{
                 width: "36px", height: "36px", borderRadius: "50%",
                 background: "var(--accent)", border: "none",
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -495,6 +546,7 @@ export default function DashboardPage() {
                 )}
                 <button
                   onClick={toggleListening}
+                  onClick={startListening}
                   style={{
                     width: "60px", height: "60px", borderRadius: "50%",
                     background: listening ? "var(--accent)" : "var(--bg-card)",
@@ -535,7 +587,9 @@ export default function DashboardPage() {
                   <p style={{ color: "var(--text-primary)", fontSize: "15px", fontWeight: "600" }}>{formatTime(timer)}</p>
                 </div>
               )}
-              <button style={{
+              <button
+              onClick={playTranslation}
+              style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "11px 20px", background: "var(--accent)",
                 border: "none", borderRadius: "var(--radius-sm)",
