@@ -95,6 +95,7 @@ export default function LanguagesPage() {
           pa: { native: "ਪੰਜਾਬੀ", speakers: "113M", countryCode: "IN" },
           si: { native: "සිංහල", speakers: "17M", countryCode: "IN" },
           uz: { native: "O'zbek", speakers: "35M", countryCode: "UZ" },
+          ln: { native: "Lingála", speakers: "70M", countryCode: "CD" },
         };
 
         const enriched = data.languages.map((l) => ({

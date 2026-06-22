@@ -92,6 +92,7 @@ const codeMap = {
   'hy-AM': 'hy', 'ka-GE': 'ka',
   'nb-NO': 'no', 'nn-NO': 'no',
   'fil': 'tl',
+  'cd': 'ln',
 };
 
 const normalizedCode = codeMap[detectedCode] || detectedCode.split('-')[0];
@@ -125,6 +126,7 @@ const languageNames = {
   'mt': 'Maltese', 'ga': 'Irish', 'cy': 'Welsh',
   'eu': 'Basque', 'ca': 'Catalan', 'gl': 'Galician',
   'lb': 'Luxembourgish', 'is': 'Icelandic',
+  'ln': 'Lingala', 
 };
 
 const detectedName = languageNames[normalizedCode] || 'English';
@@ -185,6 +187,8 @@ const getSupportedLanguages = async (req, res) => {
       { code: "cy", name: "Welsh" }, { code: "xh", name: "Xhosa" },
       { code: "yi", name: "Yiddish" }, { code: "yo", name: "Yoruba" },
       { code: "zu", name: "Zulu" },
+      { code: "ln", name: "Lingala" },
+
     ]
   });
 };

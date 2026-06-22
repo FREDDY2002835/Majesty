@@ -1,17 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-
-
-const savedData = [
-  { id: 1, original: "How much is this?", translated: "Combien ça coûte?", from: "English", to: "French", date: "Today", time: "10:45 AM", collection: "Shopping" },
-  { id: 2, original: "Where is the nearest hotel?", translated: "Où est l'hôtel le plus proche?", from: "English", to: "French", date: "Today", time: "10:30 AM", collection: "Travel" },
-  { id: 3, original: "I need a doctor", translated: "J'ai besoin d'un médecin", from: "English", to: "French", date: "Today", time: "8:45 AM", collection: "Medical" },
-  { id: 4, original: "Where is the airport?", translated: "Où est l'aéroport?", from: "English", to: "French", date: "Yesterday", time: "3:00 PM", collection: "Travel" },
-  { id: 5, original: "Nice to meet you", translated: "Ravi de vous rencontrer", from: "English", to: "French", date: "Yesterday", time: "9:30 AM", collection: "General" },
-  { id: 6, original: "Can you help me?", translated: "Pouvez-vous m'aider?", from: "English", to: "French", date: "This Week", time: "5:15 PM", collection: "General" },
-  { id: 7, original: "I would like to order food", translated: "Je voudrais commander à manger", from: "English", to: "French", date: "This Week", time: "1:00 PM", collection: "Shopping" },
-  { id: 8, original: "Call an ambulance!", translated: "Appelez une ambulance!", from: "English", to: "French", date: "This Week", time: "11:00 AM", collection: "Medical" },
-];
+import { getHistory, deleteHistoryItem } from "../api";
 
 const collections = ["All", "Travel", "Medical", "Shopping", "General"];
 
@@ -26,18 +15,38 @@ export default function SavedPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCollection, setActiveCollection] = useState("All");
-  const [removed, setRemoved] = useState([]);
   const [playing, setPlaying] = useState(null);
-  const [view, setView] = useState("list"); // list or grid
+  const [view, setView] = useState("list");
+  const [historyData, setHistoryData] = useState([]);
+  const [starred, setStarred] = useState(() => {
+    const stored = localStorage.getItem("starred_translations");
+    return stored ? JSON.parse(stored) : {};
+  });
+  const [loading, setLoading] = useState(true);
 
-  const data = savedData.filter(item => !removed.includes(item.id));
+  useEffect(() => {
+    getHistory().then(data => {
+      if (data.translations) {
+        setHistoryData(data.translations);
+      }
+      setLoading(false);
+    });
+  }, []);
 
-  const filtered = data.filter(item => {
+  const toggleStar = (id) => {
+    const updated = { ...starred, [id]: !starred[id] };
+    setStarred(updated);
+    localStorage.setItem("starred_translations", JSON.stringify(updated));
+  };
+
+  // Only show starred items
+  const savedItems = historyData.filter(item => starred[item.id]);
+
+  const filtered = savedItems.filter(item => {
     const matchSearch =
-      item.original.toLowerCase().includes(search.toLowerCase()) ||
-      item.translated.toLowerCase().includes(search.toLowerCase());
-    const matchCollection = activeCollection === "All" || item.collection === activeCollection;
-    return matchSearch && matchCollection;
+      item.original_text?.toLowerCase().includes(search.toLowerCase()) ||
+      item.translated_text?.toLowerCase().includes(search.toLowerCase());
+    return matchSearch;
   });
 
   const handlePlay = (id) => {
@@ -46,32 +55,31 @@ export default function SavedPage() {
   };
 
   const handleRemove = (id) => {
-    setRemoved([...removed, id]);
+    toggleStar(id);
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
-    
-            {sidebarOpen && (
-              <div onClick={() => setSidebarOpen(false)} style={{
-                position: "fixed", inset: 0,
-                background: "rgba(0,0,0,0.6)", zIndex: 20,
-              }} />
-            )}
-    
-            <div style={{
-              position: "fixed", top: 0, left: 0,
-              height: "100vh", zIndex: 30,
-              transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
-              transition: "transform 0.3s ease",
-            }}>
-              <Sidebar onClose={() => setSidebarOpen(false)} />
-        </div>
+
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{
+          position: "fixed", inset: 0,
+          background: "rgba(0,0,0,0.6)", zIndex: 20,
+        }} />
+      )}
+
+      <div style={{
+        position: "fixed", top: 0, left: 0,
+        height: "100vh", zIndex: 30,
+        transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+        transition: "transform 0.3s ease",
+      }}>
+        <Sidebar onClose={() => setSidebarOpen(false)} />
+      </div>
 
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
 
         {/* Header */}
-        
         <header style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
@@ -86,7 +94,7 @@ export default function SavedPage() {
               <line x1="3" y1="12" x2="21" y2="12"/>
               <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
-        </button>
+          </button>
           <div>
             <h1 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: "700", color: "var(--text-primary)" }}>
               Saved Translations
@@ -102,7 +110,7 @@ export default function SavedPage() {
               fontSize: "13px", fontWeight: "600",
               border: "1px solid rgba(250,204,21,0.3)",
             }}>
-              ⭐ {data.length} saved
+              ⭐ {savedItems.length} saved
             </span>
 
             {/* View toggle */}
@@ -165,35 +173,12 @@ export default function SavedPage() {
             />
           </div>
 
-          {/* Collection filters */}
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            {collections.map(c => (
-              <button
-                key={c}
-                onClick={() => setActiveCollection(c)}
-                style={{
-                  padding: "8px 16px", borderRadius: "20px",
-                  background: activeCollection === c ? "var(--accent)" : "var(--bg-card)",
-                  border: `1px solid ${activeCollection === c ? "var(--accent)" : "var(--border)"}`,
-                  color: activeCollection === c ? "white" : "var(--text-secondary)",
-                  fontSize: "13px", cursor: "pointer",
-                  fontWeight: activeCollection === c ? "600" : "400",
-                  transition: "all 0.2s",
-                }}
-              >
-                {c}
-                <span style={{
-                  marginLeft: "6px", fontSize: "11px",
-                  opacity: 0.8,
-                }}>
-                  {c === "All" ? data.length : data.filter(d => d.collection === c).length}
-                </span>
-              </button>
-            ))}
-          </div>
-
           {/* Content */}
-          {filtered.length > 0 ? (
+          {loading ? (
+            <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>
+              Loading saved translations...
+            </p>
+          ) : filtered.length > 0 ? (
             view === "list" ? (
               /* List view */
               <div style={{
@@ -216,23 +201,14 @@ export default function SavedPage() {
                       {/* Original */}
                       <div>
                         <p style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: "500", marginBottom: "6px" }}>
-                          {item.original}
+                          {item.original_text}
                         </p>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{
-                            fontSize: "11px", color: "var(--text-muted)",
-                            background: "var(--bg-secondary)", padding: "2px 8px", borderRadius: "10px",
-                          }}>
-                            {item.from}
-                          </span>
-                          <span style={{
-                            fontSize: "11px", padding: "2px 8px", borderRadius: "10px",
-                            background: collectionColors[item.collection]?.bg,
-                            color: collectionColors[item.collection]?.color,
-                          }}>
-                            {item.collection}
-                          </span>
-                        </div>
+                        <span style={{
+                          fontSize: "11px", color: "var(--text-muted)",
+                          background: "var(--bg-secondary)", padding: "2px 8px", borderRadius: "10px",
+                        }}>
+                          {item.source_language}
+                        </span>
                       </div>
 
                       {/* Arrow */}
@@ -246,17 +222,19 @@ export default function SavedPage() {
                       {/* Translated */}
                       <div>
                         <p style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: "500", marginBottom: "6px" }}>
-                          {item.translated}
+                          {item.translated_text}
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                           <span style={{
                             fontSize: "11px", color: "var(--accent)",
                             background: "rgba(37,99,235,0.1)", padding: "2px 8px", borderRadius: "10px",
                           }}>
-                            {item.to}
+                            {item.target_language}
                           </span>
                           <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                            {item.date} · {item.time}
+                            {new Date(item.created_at).toLocaleDateString([], { month: "short", day: "numeric" })}
+                            {" · "}
+                            {new Date(item.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
                       </div>
@@ -265,7 +243,6 @@ export default function SavedPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <button
                           onClick={() => handlePlay(item.id)}
-                          title="Play translation"
                           style={{
                             background: playing === item.id ? "var(--accent)" : "var(--bg-secondary)",
                             border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
@@ -281,21 +258,20 @@ export default function SavedPage() {
                           {playing === item.id ? "Playing..." : "Play"}
                         </button>
 
+                        {/* Unstar button */}
                         <button
                           onClick={() => handleRemove(item.id)}
                           title="Remove from saved"
                           style={{
                             background: "none", border: "none", cursor: "pointer",
-                            padding: "6px", color: "var(--text-muted)",
+                            padding: "6px", color: "#facc15",
                             transition: "color 0.2s", borderRadius: "var(--radius-sm)",
                           }}
                           onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
-                          onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                          onMouseLeave={e => e.currentTarget.style.color = "#facc15"}
                         >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                           </svg>
                         </button>
                       </div>
@@ -318,20 +294,19 @@ export default function SavedPage() {
                     onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   >
-                    {/* Collection badge */}
+                    {/* Language badge */}
                     <span style={{
                       alignSelf: "flex-start", fontSize: "11px", padding: "3px 10px",
                       borderRadius: "10px", fontWeight: "600",
-                      background: collectionColors[item.collection]?.bg,
-                      color: collectionColors[item.collection]?.color,
+                      background: "rgba(37,99,235,0.1)", color: "var(--accent)",
                     }}>
-                      {item.collection}
+                      {item.source_language} → {item.target_language}
                     </span>
 
                     {/* Original */}
                     <div>
-                      <p style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Original ({item.from})</p>
-                      <p style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: "500" }}>{item.original}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Original</p>
+                      <p style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: "500" }}>{item.original_text}</p>
                     </div>
 
                     {/* Arrow */}
@@ -346,14 +321,16 @@ export default function SavedPage() {
 
                     {/* Translated */}
                     <div>
-                      <p style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Translation ({item.to})</p>
-                      <p style={{ fontSize: "14px", color: "var(--accent)", fontWeight: "500" }}>{item.translated}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Translation</p>
+                      <p style={{ fontSize: "14px", color: "var(--accent)", fontWeight: "500" }}>{item.translated_text}</p>
                     </div>
 
                     {/* Footer */}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "4px" }}>
                       <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                        {item.date} · {item.time}
+                        {new Date(item.created_at).toLocaleDateString([], { month: "short", day: "numeric" })}
+                        {" · "}
+                        {new Date(item.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
@@ -375,15 +352,14 @@ export default function SavedPage() {
                           style={{
                             background: "none", border: "1px solid var(--border)",
                             borderRadius: "var(--radius-sm)", padding: "5px 8px",
-                            cursor: "pointer", color: "var(--text-muted)",
+                            cursor: "pointer", color: "#facc15",
                             transition: "all 0.2s",
                           }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "#facc15"; }}
                         >
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                           </svg>
                         </button>
                       </div>
@@ -404,7 +380,7 @@ export default function SavedPage() {
                 No saved translations yet
               </p>
               <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
-                Star any translation from the dashboard or history to save it here.
+                Click the ⭐ star on any translation in your History to save it here.
               </p>
             </div>
           )}

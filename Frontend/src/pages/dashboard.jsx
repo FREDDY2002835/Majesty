@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
-import { translate, getHistory, detectLanguage, deleteHistoryItem } from "../api";
+import { translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
 import { useNavigate } from "react-router-dom";
 
 
@@ -123,6 +123,7 @@ export default function DashboardPage() {
   const [sourceLang, setSourceLang] = useState({ code: "en", label: "English", flag: "🇬🇧" });
   const [langSearch, setLangSearch] = useState("");
   const [recentHistory, setRecentHistory] = useState([]);
+  const [saveLabel, setSaveLabel] = useState("Save");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -546,7 +547,22 @@ export default function DashboardPage() {
                 </svg>
                 Play Translation
               </button>
-              <button style={{
+              <button 
+                onClick={() => {
+                  if (!translatedText) return;
+                  // Find the latest history item and star it
+                  getHistory().then(data => {
+                    if (data.translations && data.translations.length > 0) {
+                      const latest = data.translations[0];
+                      const current = JSON.parse(localStorage.getItem("starred_translations") || "{}");
+                      const updated = { ...current, [latest.id]: true };
+                      localStorage.setItem("starred_translations", JSON.stringify(updated));
+                      setSaveLabel("✓ Saved!");
+                      setTimeout(() => setSaveLabel("Save"), 2000);
+                    }
+                  });
+                }}
+              style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "11px 20px", background: "var(--bg-card)",
                 border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",

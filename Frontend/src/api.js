@@ -68,3 +68,7 @@ export const clearHistory = () =>
     headers: headers(true),
     body: JSON.stringify({ text }),
   }).then(r => r.json());
+
+  export const getSupportedLanguages = () =>
+  fetch(`${BASE_URL}/translate/languages`)
+    .then(r => r.json());
