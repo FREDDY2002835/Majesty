@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { getMe, updateMe, getHistory } from "../api";
 
+
 export default function ProfilePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editing, setEditing] = useState(false);
