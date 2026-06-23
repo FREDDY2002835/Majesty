@@ -5,6 +5,7 @@ import { getMe, updateMe, clearHistory, deleteHistoryItem } from "../api";
 import { useThemeColor } from "../hooks/useThemeColor";
 import { Palette as PaletteIcon } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { Sun, Moon, Monitor } from "lucide-react";
 
 
 // Add clearHistory and deleteMe to api.js if not already there
