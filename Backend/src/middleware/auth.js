@@ -20,9 +20,5 @@ const auth = (req, res, next) => {
   }
 };
 
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"))
-);
 
 module.exports = auth;

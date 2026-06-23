@@ -162,38 +162,6 @@ const deleteMe = async (req, res) => {
 };
 
 
-const uploadProfileImage = async (req, res) => {
-  try {
-    const imageUrl =
-      `http://localhost:5000/uploads/${req.file.filename}`;
 
-    const result = await pool.query(
-      `
-      UPDATE users
-      SET profile_image = $1
-      WHERE id = $2
-      RETURNING id,name,email,profile_image
-      `,
-      [imageUrl, req.user.id]
-    );
 
-    res.json({
-      message: "Profile image updated",
-      user: result.rows[0],
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: "Upload failed",
-    });
-  }
-};
-
-module.exports = {
-  signup,
-  login,
-  getMe,
-  updateMe,
-  deleteMe,
-  uploadProfileImage,
-};
+module.exports = { signup, login, getMe, updateMe, deleteMe };

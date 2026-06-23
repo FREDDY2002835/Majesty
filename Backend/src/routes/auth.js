@@ -12,14 +12,5 @@ router.get('/me', auth, getMe);
 router.put('/me', auth, updateMe);
 router.delete('/me', auth, deleteMe);
 
-router.post(
-  "/profile-image",
-  auth,
-  upload.single("image"),
-  uploadProfileImage
-);
-
-// fine
-// good
 
 module.exports = router;

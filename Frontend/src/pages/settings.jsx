@@ -48,25 +48,23 @@ export default function SettingsPage() {
     });
   }, []);
 
-const handleSave = async () => {
+ const handleSave = async () => {
   try {
     const payload = {
       name: profile.name,
-      preferred_language: languages.source,
     };
 
     if (profile.password.trim()) {
       payload.password = profile.password;
     }
 
-    const data = await updateMe(payload);
+    const result = await updateMe(payload);
 
-    if (!data.user) {
-      alert(data.message || "Failed to save changes");
-      return;
+    if (!result.user) {
+      throw new Error(result.message || "Failed to update profile");
     }
 
-    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("user", JSON.stringify(result.user));
 
     localStorage.setItem(
       "settings",
@@ -80,7 +78,6 @@ const handleSave = async () => {
 
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
-
   } catch (err) {
     console.error(err);
     alert("Failed to save settings");
