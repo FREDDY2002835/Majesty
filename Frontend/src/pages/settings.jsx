@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { getMe, updateMe, clearHistory, deleteHistoryItem } from "../api";
+import { useThemeColor } from "../hooks/useThemeColor";
+import { Palette as PaletteIcon } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
+
 
 // Add clearHistory and deleteMe to api.js if not already there
 const deleteMe = () =>
@@ -23,6 +27,13 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState({ name: "", email: "", password: "" });
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const { color, setColor, presets } = useThemeColor();
+  const { theme, setTheme } = useTheme();
+  const THEMES = [
+  { key: 'light',  label: 'Light',  icon: Sun },
+  { key: 'dark',   label: 'Dark',   icon: Moon },
+  { key: 'system', label: 'System', icon: Monitor },
+];
   const savedSettings =
   JSON.parse(localStorage.getItem("settings")) || {};
 
@@ -113,6 +124,7 @@ export default function SettingsPage() {
   const speedOptions = ["Slow", "Normal", "Fast"];
 
   return (
+    
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
 
       {sidebarOpen && (
@@ -207,6 +219,8 @@ export default function SettingsPage() {
               </div>
             )}
           </Section>
+
+          
 
           {/* Language Settings */}
           <Section title="Language Preferences" icon={
@@ -396,6 +410,49 @@ export default function SettingsPage() {
 
             </div>
           </Section>
+
+          <Section title="Appearance" icon={<PaletteIcon />}>
+  <Field label="Accent Color">
+    <div style={{ display: "flex", gap: "12px" }}>
+      {Object.entries(presets).map(([key, p]) => (
+        <button
+          key={key}
+          onClick={() => setColor(key)}
+          aria-label={key}
+          style={{
+            width: 36, height: 36, borderRadius: "50%",
+            background: p.accent, cursor: "pointer",
+            border: color === key ? "3px solid var(--text-primary)" : "2px solid var(--border)",
+            transition: "all 0.2s",
+          }}
+        />
+      ))}
+    </div>
+  </Field>
+</Section>
+
+<Section title="Theme" icon={<Moon size={18} />}>
+  <div style={{ display: 'flex', gap: 12 }}>
+    {THEMES.map(({ key, label, icon: Icon }) => (
+      <button
+        key={key}
+        onClick={() => setTheme(key)}
+        style={{
+          flex: 1,
+          padding: 16,
+          borderRadius: 12,
+          border: `2px solid ${theme === key ? 'var(--accent)' : 'var(--border)'}`,
+          background: 'var(--bg-secondary)',
+          color: 'var(--text-primary)',
+          cursor: 'pointer',
+        }}
+      >
+        <Icon size={20} />
+        <div>{label}</div>
+      </button>
+    ))}
+  </div>
+</Section>
 
         </main>
       </div>

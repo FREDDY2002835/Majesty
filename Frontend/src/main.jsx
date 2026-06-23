@@ -12,3 +12,14 @@ createRoot(document.getElementById("root")).render(
   </StrictMode>
 );
 
+const saved = localStorage.getItem("themeColor");
+if (saved) {
+  // applique le preset directement (copie l'objet PRESETS ici ou importe)
+}
+
+const resolved =
+  saved === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : saved;
+document.documentElement.classList.add(resolved);
+
