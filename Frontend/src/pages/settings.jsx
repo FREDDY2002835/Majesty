@@ -23,8 +23,19 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState({ name: "", email: "", password: "" });
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const savedSettings =
+  JSON.parse(localStorage.getItem("settings")) || {};
 
-  const [languages, setLanguages] = useState({ source: "English", target: "French" });
+  const [languages, setLanguages] = useState(() => {
+  const saved = localStorage.getItem("languageSettings");
+
+  return saved
+    ? JSON.parse(saved)
+    : {
+        source: "English",
+        target: "French",
+      };
+});
   const [audio, setAudio] = useState({ speed: "Normal", volume: 80, autoPlay: true, bluetooth: false });
   const [notifications, setNotifications] = useState({ email: true, push: false, history: true });
 
@@ -37,16 +48,44 @@ export default function SettingsPage() {
     });
   }, []);
 
-  const handleSave = async () => {
-    const updates = { name: profile.name };
-    const data = await updateMe(updates);
-    if (data.user) {
-      const stored = JSON.parse(localStorage.getItem("user") || "{}");
-      localStorage.setItem("user", JSON.stringify({ ...stored, name: data.user.name }));
+const handleSave = async () => {
+  try {
+    const payload = {
+      name: profile.name,
+      preferred_language: languages.source,
+    };
+
+    if (profile.password.trim()) {
+      payload.password = profile.password;
     }
+
+    const data = await updateMe(payload);
+
+    if (!data.user) {
+      alert(data.message || "Failed to save changes");
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    localStorage.setItem(
+      "settings",
+      JSON.stringify({
+        profile,
+        languages,
+        audio,
+        notifications,
+      })
+    );
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save settings");
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem("token");

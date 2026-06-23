@@ -112,20 +112,36 @@ const getMe = async (req, res) => {
 
 // PUT /api/auth/me
 const updateMe = async (req, res) => {
-  const { name, preferred_language } = req.body;
+  const { name, preferred_language, password } = req.body;
 
   try {
+    let hashedPassword = null;
+
+    if (password && password.trim() !== "") {
+      hashedPassword = await bcrypt.hash(password, 12);
+    }
+
     const result = await pool.query(
       `UPDATE users
-       SET name = COALESCE($1, name),
-           preferred_language = COALESCE($2, preferred_language),
-           updated_at = NOW()
-       WHERE id = $3
+       SET
+         name = COALESCE($1, name),
+         preferred_language = COALESCE($2, preferred_language),
+         password = COALESCE($3, password),
+         updated_at = NOW()
+       WHERE id = $4
        RETURNING id, name, email, preferred_language`,
-      [name, preferred_language, req.user.id]
+      [
+        name,
+        preferred_language,
+        hashedPassword,
+        req.user.id
+      ]
     );
 
-    res.json({ message: 'Profile updated.', user: result.rows[0] });
+    res.json({
+      message: 'Profile updated.',
+      user: result.rows[0]
+    });
 
   } catch (err) {
     console.error('updateMe error:', err);
@@ -145,4 +161,39 @@ const deleteMe = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, getMe, updateMe, deleteMe };
+
+const uploadProfileImage = async (req, res) => {
+  try {
+    const imageUrl =
+      `http://localhost:5000/uploads/${req.file.filename}`;
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET profile_image = $1
+      WHERE id = $2
+      RETURNING id,name,email,profile_image
+      `,
+      [imageUrl, req.user.id]
+    );
+
+    res.json({
+      message: "Profile image updated",
+      user: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Upload failed",
+    });
+  }
+};
+
+module.exports = {
+  signup,
+  login,
+  getMe,
+  updateMe,
+  deleteMe,
+  uploadProfileImage,
+};
