@@ -188,6 +188,7 @@ export default function SettingsPage() {
               <circle cx="12" cy="7" r="4"/>
             </svg>
           }>
+            
             {loading ? (
               <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>Loading...</p>
             ) : (
