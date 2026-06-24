@@ -41,7 +41,8 @@ const signup = async (req, res) => {
     res.status(201).json({
       message: 'Account created successfully!',
       token,
-      user
+      user,
+      avatar: user.avatar
     });
 
   } catch (err) {
@@ -80,7 +81,8 @@ const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        preferred_language: user.preferred_language
+        preferred_language: user.preferred_language,
+        avatar: user.avatar
       }
     });
 
