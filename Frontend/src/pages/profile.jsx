@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { getMe, updateMe, getHistory } from "../api";
+import { uploadAvatar } from "../api";
 
 
 export default function ProfilePage() {
@@ -11,38 +12,69 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [translationCount, setTranslationCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
 
   useEffect(() => {
-    Promise.all([getMe(), getHistory()]).then(([userData, historyData]) => {
-      if (userData.user) {
-        setProfile(userData.user);
-        setForm({
-          name: userData.user.name,
-          email: userData.user.email,
-          preferred_language: userData.user.preferred_language,
-        });
-      }
-      if (historyData.pagination) {
-        setTranslationCount(historyData.pagination.total);
-      }
-      setLoading(false);
-    });
-  }, []);
+  Promise.all([getMe(), getHistory()]).then(([userData, historyData]) => {
+    console.log("User data:", userData.user); // 👈 add this
+  console.log("Avatar from DB:", userData.user?.avatar); // 👈 add this
+    if (userData.user) {
+      setProfile(userData.user);
+      setAvatarUrl(userData.user.avatar 
+  ? `http://localhost:5000${userData.user.avatar}` 
+  : null);
+      setForm({
+        name: userData.user.name,
+        email: userData.user.email,
+        preferred_language: userData.user.preferred_language,
+      });
+       const stored = JSON.parse(localStorage.getItem("user") || "{}");
+  localStorage.setItem("user", JSON.stringify({ 
+    ...stored, 
+    avatar: userData.user.avatar 
+  }));
 
-  const handleSave = async () => {
-    const data = await updateMe({
-      name: form.name,
-      preferred_language: form.preferred_language,
-    });
-    if (data.user) {
-      setProfile(data.user);
-      const stored = JSON.parse(localStorage.getItem("user") || "{}");
-      localStorage.setItem("user", JSON.stringify({ ...stored, name: data.user.name }));
     }
-    setEditing(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
+    if (historyData.pagination) {
+      setTranslationCount(historyData.pagination.total);
+    }
+    setLoading(false);
+  });
+}, []);
+
+const handleAvatarChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const data = await uploadAvatar(file);
+  if (data.avatar) {
+    const fullUrl = `http://localhost:5000${data.avatar}`;
+    setAvatarUrl(fullUrl);
+    // 👇 Save to localStorage so dashboard and other pages see it
+    const stored = JSON.parse(localStorage.getItem("user") || "{}");
+    localStorage.setItem("user", JSON.stringify({ ...stored, avatar: data.avatar }));
+  }
+};
+
+ const handleSave = async () => {
+  const data = await updateMe({
+    name: form.name,
+    preferred_language: form.preferred_language,
+  });
+  if (data.user) {
+    setProfile(data.user);
+    const stored = JSON.parse(localStorage.getItem("user") || "{}");
+    localStorage.setItem("user", JSON.stringify({ 
+      ...stored, 
+      name: data.user.name,
+      avatar: stored.avatar // 👈 keep the avatar when saving other changes
+    }));
+  }
+  setEditing(false);
+  setSaved(true);
+  setTimeout(() => setSaved(false), 2500);
+};
 
   const handleCancel = () => {
     setForm({
@@ -152,32 +184,49 @@ export default function ProfilePage() {
                 display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap",
               }}>
                 {/* Avatar */}
-                <div style={{ position: "relative" }}>
-                  <div style={{
-                    width: "80px", height: "80px", borderRadius: "50%",
-                    background: "var(--accent)", display: "flex",
-                    alignItems: "center", justifyContent: "center",
-                    fontSize: "32px", fontWeight: "700", color: "white",
-                    fontFamily: "var(--font-display)",
-                    boxShadow: "var(--shadow-accent)",
-                  }}>
-                    {profile?.name?.charAt(0).toUpperCase()}
-                  </div>
-                  {editing && (
-                    <button style={{
-                      position: "absolute", bottom: 0, right: 0,
-                      width: "26px", height: "26px", borderRadius: "50%",
-                      background: "var(--accent)", border: "2px solid var(--bg-card)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", color: "white",
-                    }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
+<div style={{ position: "relative" }}>
+  <div style={{
+    width: "80px", height: "80px", borderRadius: "50%",
+    background: "var(--accent)", display: "flex",
+    alignItems: "center", justifyContent: "center",
+    fontSize: "32px", fontWeight: "700", color: "white",
+    fontFamily: "var(--font-display)",
+    boxShadow: "var(--shadow-accent)",
+    overflow: "hidden",
+  }}>
+    {avatarUrl ? (
+      <img
+        src={avatarUrl}
+        alt="Profile"
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
+    ) : (
+      profile?.name?.charAt(0).toUpperCase()
+    )}
+  </div>
+
+  {/* Upload button - always visible */}
+  <label htmlFor="avatar-upload" style={{
+    position: "absolute", bottom: 0, right: 0,
+    width: "26px", height: "26px", borderRadius: "50%",
+    background: "var(--accent)", border: "2px solid var(--bg-card)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", color: "white",
+  }}>
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/>
+      <line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+  </label>
+  <input
+    id="avatar-upload"
+    type="file"
+    accept="image/*"
+    onChange={handleAvatarChange}
+    style={{ display: "none" }}
+  />
+</div>
 
                 {/* Name + info */}
                 <div style={{ flex: 1 }}>

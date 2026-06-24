@@ -73,3 +73,12 @@ export const clearHistory = () =>
   fetch(`${BASE_URL}/translate/languages`)
     .then(r => r.json());
 
+export const uploadAvatar = (file) => {
+  const formData = new FormData();
+  formData.append('avatar', file);
+  return fetch(`${BASE_URL}/auth/avatar`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${getToken()}` },
+    body: formData,
+  }).then(r => r.json());
+};

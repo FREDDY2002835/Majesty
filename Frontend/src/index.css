@@ -11,7 +11,7 @@
   --bg-secondary: #0b1530;
   --bg-card: #0f1d3a;
   --bg-input: #0d1935;
-  --bg-hover: #132040;
+  --bg-hover: #2563eb;
   --border: #1a2d52;
   --border-light: #1e3460;
   --accent: #2563eb;
@@ -41,8 +41,10 @@
 .light {
   --bg-primary: #c8d5f3;
   --bg-secondary: #f7f7f7;
-  --text-primary: #697deb;
+  --text-primary: #000000;
   --text-secondary: #52525b;
   --border: #e4e4e7;
   --bg-card: #ffffff;
 }
+
+

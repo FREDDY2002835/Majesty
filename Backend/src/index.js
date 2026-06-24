@@ -5,6 +5,7 @@ require('dotenv').config();
 const db = require('./config/database');
 const authRoutes = require('./routes/auth');
 const translateRoutes = require('./routes/translate');
+const path = require('path');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/translate', translateRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Test route
 app.get('/api/health', (req, res) => {

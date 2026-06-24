@@ -94,7 +94,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, preferred_language, created_at FROM users WHERE id = $1',
+      'SELECT id, name, email, preferred_language, created_at, avatar FROM users WHERE id = $1',
       [req.user.id]
     );
 
@@ -129,7 +129,8 @@ const updateMe = async (req, res) => {
          password = COALESCE($3, password),
          updated_at = NOW()
        WHERE id = $4
-       RETURNING id, name, email, preferred_language`,
+       RETURNING id, name, email, preferred_language, avatar`,
+       
       [
         name,
         preferred_language,
@@ -162,6 +163,28 @@ const deleteMe = async (req, res) => {
 };
 
 
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    await pool.query(
+      'UPDATE users SET avatar = $1 WHERE id = $2',
+      [avatarUrl, req.user.id]
+    );
+
+    res.json({ message: 'Avatar updated!', avatar: avatarUrl });
+
+  } catch (err) {
+    console.error('Avatar upload error:', err);
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
 
 
-module.exports = { signup, login, getMe, updateMe, deleteMe };
+
+
+module.exports = { signup, login, getMe, updateMe, deleteMe, uploadAvatar };
