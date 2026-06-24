@@ -316,21 +316,21 @@ const playTranslation = () => {
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
               <div style={{
-  width: "32px", height: "32px", borderRadius: "50%",
-  background: "var(--accent)", display: "flex", alignItems: "center",
-  justifyContent: "center", fontSize: "13px", fontWeight: "600", color: "white",
-  overflow: "hidden",
-}}>
-  {user.avatar ? (
-    <img
-      src={`http://localhost:5000${user.avatar}`}
-      alt="avatar"
-      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-    />
-  ) : (
-    user.name?.charAt(0).toUpperCase()
-  )}
-</div>
+                  width: "32px", height: "32px", borderRadius: "50%",
+                  background: "var(--accent)", display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: "13px", fontWeight: "600", color: "white",
+                  overflow: "hidden",
+                }}>
+                  {user.avatar ? (
+                    <img
+                      src={`http://localhost:5000${user.avatar}`}
+                      alt="avatar"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    user.name?.charAt(0).toUpperCase()
+                  )}
+                </div>
               <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9"/>

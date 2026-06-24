@@ -8,8 +8,10 @@ import LanguagesPage from "./pages/languages.jsx";
 import ProfilePage from "./pages/profile.jsx";
 import SettingsPage from "./pages/settings.jsx";
 import HelpPage from "./pages/help.jsx";
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
+  useTheme();
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
