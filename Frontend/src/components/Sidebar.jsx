@@ -88,9 +88,16 @@ export default function Sidebar() {
         display: "flex", alignItems: "center",
         gap: "10px", padding: "0 20px", marginBottom: "32px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <img src={logo} alt="Logo" style={{width: "70px", height: "auto", }}/>
-        </div>
+        <img 
+  src={logo} 
+  alt="Logo" 
+  style={{ 
+    width: "70px", 
+    height: "auto",
+    filter: "var(--logo-filter)",
+    transition: "filter 0.3s ease",
+  }} 
+/>
         <span style={{
           fontFamily: "var(--font-display)",
           fontSize: "18px", fontWeight: "700",
@@ -119,8 +126,8 @@ export default function Sidebar() {
                 boxShadow: active ? "var(--shadow-accent)" : "none",
                 textDecoration: "none",
               }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.background = "var(--bg-hover)"; }}
-              onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}
+             onMouseEnter={e => { if (!active) { e.currentTarget.style.background = "var(--bg-hover)"; e.currentTarget.style.color = "var(--accent)"; }}}
+            onMouseLeave={e => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-secondary)"; }}}
             >
               {item.icon}
               {item.label}
@@ -139,8 +146,8 @@ export default function Sidebar() {
             color: "var(--text-secondary)", fontSize: "14px",
             transition: "all 0.2s",
           }}
-          onMouseEnter={e => e.currentTarget.style.background = "var(--bg-hover)"}
-          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--bg-hover)"; e.currentTarget.style.color = "var(--accent)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-secondary)"; }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

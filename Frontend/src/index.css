@@ -39,6 +39,8 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   --border: #27272a;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+
 }
 
 .light {
@@ -50,6 +52,7 @@
   --text-secondary: #52525b;
   --text-muted: #71717a;
   --border: #e4e4e7;
+  --bg-hover: rgba(0, 0, 0, 0.05);
 }
 
 

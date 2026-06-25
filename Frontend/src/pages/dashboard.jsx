@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
 import { translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 
 
@@ -290,6 +291,7 @@ const playTranslation = () => {
         color: var(--accent) !important;
         transition: all 0.2s;
       }
+        filter: invert(27%) sepia(96%) saturate(1234%) hue-rotate(210deg) brightness(95%) contrast(97%);
     `}</style>
 
         {sidebarOpen && (
@@ -327,16 +329,19 @@ const playTranslation = () => {
 
           {/* Center logo */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{
-              width: "28px", height: "28px", borderRadius: "50%",
-              background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z" fill="white"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="12" y1="19" x2="12" y2="23" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <img 
+  src={logo} 
+  alt="Logo" 
+  style={{ 
+    width: "70px", 
+    height: "auto",
+    filter: "var(--logo-filter)",
+    transition: "filter 0.3s ease",
+  }} 
+/>
+                          
+                        </div>
             <span style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: "700", color: "var(--accent)" }}>Majesty</span>
           </div>
 

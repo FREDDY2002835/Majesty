@@ -50,9 +50,16 @@ export default function AuthLayout({ children }) {
             display: "inline-flex", alignItems: "center",
             gap: "10px", marginBottom: "6px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <img src={logo} alt="Logo" style={{width: "70px", height: "auto", }}/>
-            </div>
+            <img 
+  src={logo} 
+  alt="Logo" 
+  style={{ 
+    width: "70px", 
+    height: "auto",
+    filter: "var(--logo-filter)",
+    transition: "filter 0.3s ease",
+  }} 
+/>
             <span style={{
               fontFamily: "var(--font-display)",
               fontSize: "22px", fontWeight: "700",

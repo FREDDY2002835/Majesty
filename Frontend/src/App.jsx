@@ -10,9 +10,11 @@ import SettingsPage from "./pages/settings.jsx";
 import HelpPage from "./pages/help.jsx";
 import { useTheme } from './hooks/useTheme';
 import ForgotPasswordPage from "./pages/forgotPassword";
+import { useThemeColor } from "./hooks/useThemeColor";
 
 export default function App() {
   useTheme();
+   useThemeColor();
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
