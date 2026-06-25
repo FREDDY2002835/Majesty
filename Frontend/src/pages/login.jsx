@@ -50,7 +50,7 @@ export default function LoginPage() {
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
             </svg>
           </span>
-          <input
+          <input 
             type="email"
             placeholder="Email address"
             value={form.email}
@@ -79,7 +79,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: "right", marginTop: "-6px" }}>
-          <Link to="#" style={{ fontSize: "12px", color: "var(--accent)" }}>
+          <Link to="/forgot-password" style={{ fontSize: "12px", color: "var(--accent)" }}>
             Forgot password?
           </Link>
         </div>

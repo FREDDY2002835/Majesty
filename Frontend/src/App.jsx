@@ -9,6 +9,7 @@ import ProfilePage from "./pages/profile.jsx";
 import SettingsPage from "./pages/settings.jsx";
 import HelpPage from "./pages/help.jsx";
 import { useTheme } from './hooks/useTheme';
+import ForgotPasswordPage from "./pages/forgotPassword";
 
 export default function App() {
   useTheme();
@@ -24,6 +25,7 @@ export default function App() {
       <Route path="/dashboard/Profile" element={<ProfilePage/>}/>
       <Route path="/dashboard/Settings" element={<SettingsPage/>}/>
       <Route path="/dashboard/Help" element={<HelpPage/>}/>
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     </Routes>
   );
 }

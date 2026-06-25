@@ -33,18 +33,23 @@
 :root, .dark {
   --bg-primary: #13131d;
   --bg-secondary: #15151c;
+  --bg-card: #1a1a2e;
+  --bg-input: #1e1e2e;
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
   --border: #27272a;
 }
 
 .light {
   --bg-primary: #c8d5f3;
   --bg-secondary: #f7f7f7;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
   --text-primary: #000000;
   --text-secondary: #52525b;
+  --text-muted: #71717a;
   --border: #e4e4e7;
-  --bg-card: #ffffff;
 }
 
 

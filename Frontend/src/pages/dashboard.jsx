@@ -239,6 +239,14 @@ const startListening = () => {
   window.currentRecognition = recognition;
 };
 
+const stopListening = () => {
+  if (window.currentRecognition) {
+    window.currentRecognition.stop();
+    window.currentRecognition = null;
+  }
+  setListening(false);
+};
+
 const playTranslation = () => {
   if (!translatedText) {
     alert("No translation to play yet.");
@@ -257,6 +265,32 @@ const playTranslation = () => {
 };
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
+
+       {/* Global hover styles for dashboard buttons */}
+    <style>{`
+      .dash-btn:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+        transition: all 0.2s;
+      }
+      .dash-btn-accent:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        transition: all 0.2s;
+      }
+      .dash-btn-danger:hover {
+        background: #ef4444 !important;
+        color: white !important;
+        transform: translateY(-1px);
+        transition: all 0.2s;
+      }
+      .dash-btn-ghost:hover {
+        background: var(--bg-secondary) !important;
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        transition: all 0.2s;
+      }
+    `}</style>
 
         {sidebarOpen && (
           <div onClick={() => setSidebarOpen(false)} style={{
@@ -283,7 +317,7 @@ const playTranslation = () => {
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
           background: "var(--bg-secondary)", position: "sticky", top: 0, zIndex: 10,
         }}>
-          <button onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", color: "var(--text-secondary)", padding: 0, cursor: "pointer" }}>
+          <button onClick={() => setSidebarOpen(true)} className="dash-btn-ghost" style={{ background: "none", border: "none", color: "var(--text-secondary)", padding: 0, cursor: "pointer" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="6" x2="21" y2="6"/>
               <line x1="3" y1="12" x2="21" y2="12"/>
@@ -531,7 +565,7 @@ const playTranslation = () => {
             {/* Left: start/stop */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <button
-                onClick={handleTranslate}
+                onClick={handleTranslate} className="dash-btn-ghost"
                 style={{
                   display: "flex", alignItems: "center", gap: "8px",
                   padding: "10px 18px", background: "var(--bg-card)",
@@ -559,7 +593,7 @@ const playTranslation = () => {
                 )}
                 <button
                   onClick={toggleListening}
-                  onClick={startListening}
+                  onClick={startListening} className="dash-btn-ghost"
                   style={{
                     width: "60px", height: "60px", borderRadius: "50%",
                     background: listening ? "var(--accent)" : "var(--bg-card)",
@@ -579,7 +613,9 @@ const playTranslation = () => {
                 </button>
               </div>
 
-              <button  style={{
+              <button 
+              onClick={stopListening} className="dash-btn-ghost"
+              style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "10px 18px", background: "var(--bg-card)",
                 border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
@@ -601,7 +637,24 @@ const playTranslation = () => {
                 </div>
               )}
               <button
-              onClick={playTranslation}
+                onClick={() => {
+                  window.speechSynthesis.cancel();
+                  setIsPlaying(false);
+                }} className="dash-btn-ghost"
+                 style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                padding: "10px 18px", background: "var(--bg-card)",
+                border: "1px solid var(--border)", borderRadius: "var(--radius-sm)",
+                color: "var(--text-primary)", fontSize: "14px", cursor: "pointer",
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                </svg>
+                Stop
+              </button>
+
+              <button
+              onClick={playTranslation} className="dash-btn-ghost"
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "11px 20px", background: "var(--accent)",
@@ -628,7 +681,7 @@ const playTranslation = () => {
                       setTimeout(() => setSaveLabel("Save"), 2000);
                     }
                   });
-                }}
+                }}  className="dash-btn-ghost"
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "11px 20px", background: "var(--bg-card)",
@@ -658,7 +711,7 @@ const playTranslation = () => {
                     Recent History
                   </span>
                   <button
-                    onClick={() => navigate("/dashboard/history")}
+                    onClick={() => navigate("/dashboard/history")} className="dash-btn-ghost"
                     style={{
                       background: "none", border: "1px solid var(--border)",
                       borderRadius: "var(--radius-sm)", padding: "6px 14px",
