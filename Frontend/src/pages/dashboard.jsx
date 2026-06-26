@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
 import { translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
@@ -115,7 +115,8 @@ export default function DashboardPage() {
   const [listening, setListening] = useState(false);
   const [selectedLang, setSelectedLang] = useState(languages[0]);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(0);
+  const timerRef = useRef(null);
   const [starred, setStarred] = useState({});
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -155,19 +156,6 @@ export default function DashboardPage() {
   return () => clearTimeout(timer);
 }, [inputText]);
 
-  const toggleListening = () => {
-    setListening(!listening);
-    if (!listening) {
-      let t = 0;
-      const interval = setInterval(() => {
-        t++;
-        setTimer(t);
-      }, 1000);
-      setTimeout(() => clearInterval(interval), 30000);
-    } else {
-      setTimer(5);
-    }
-  };
 
   const formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -217,34 +205,53 @@ const startListening = () => {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
 
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  recognition.continuous = true;        // ← reste actif
+  recognition.interimResults = true;    // ← texte en direct
   recognition.lang = sourceLang.code || 'en';
 
-  recognition.onstart = () => setListening(true);
+  recognition.onstart = () => {
+    setListening(true);
+    setTimer(0);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimer(prev => prev + 1);
+    }, 1000);
+  };
 
   recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
+    let transcript = "";
+    for (let i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
     setInputText(transcript);
-    setListening(false);
   };
 
   recognition.onerror = (event) => {
     console.error("Speech recognition error:", event.error);
     setListening(false);
+    if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  recognition.onend = () => setListening(false);
+  recognition.onend = () => {
+    setListening(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
 
-  recognition.start();
-  window.currentRecognition = recognition;
+  try {
+    recognition.start();
+    window.currentRecognition = recognition;
+  } catch (err) {
+    console.error("Failed to start:", err);
+  }
 };
+
 
 const stopListening = () => {
   if (window.currentRecognition) {
     window.currentRecognition.stop();
     window.currentRecognition = null;
   }
+  if (timerRef.current) clearInterval(timerRef.current);
   setListening(false);
 };
 
@@ -371,9 +378,7 @@ const playTranslation = () => {
                   )}
                 </div>
               <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
+              
             </div>
           </div>
         </header>
@@ -597,8 +602,7 @@ const playTranslation = () => {
                   }} />
                 )}
                 <button
-                  onClick={toggleListening}
-                  onClick={startListening} className="dash-btn-ghost"
+                   onClick={listening ? stopListening : startListening} className="dash-btn-ghost"
                   style={{
                     width: "60px", height: "60px", borderRadius: "50%",
                     background: listening ? "var(--accent)" : "var(--bg-card)",
@@ -715,6 +719,7 @@ const playTranslation = () => {
                   <span style={{ color: "var(--accent)", fontWeight: "600", fontSize: "15px" }}>
                     Recent History
                   </span>
+                  {/* this is the history button */}
                   <button
                     onClick={() => navigate("/dashboard/history")} className="dash-btn-ghost"
                     style={{
