@@ -1,0 +1,1 @@
+{"level":"warn","message":"409 - An account with this email already exists.","method":"POST","path":"/api/auth/signup","timestamp":"2026-06-30 10:29:29"}

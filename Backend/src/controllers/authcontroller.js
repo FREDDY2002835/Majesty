@@ -2,6 +2,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
+const { ConflictError } = require('../utils/errors');
+const { asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../utils/logger');
+
 // Helper: generate a JWT token
 const generateToken = (user) => {
   return jwt.sign(
@@ -12,44 +16,37 @@ const generateToken = (user) => {
 };
 
 // POST /api/auth/signup
-const signup = async (req, res) => {
+const signup = asyncHandler(async (req, res) => {
   const { name, email, password, preferred_language = 'en' } = req.body;
 
-  try {
-    // Check if email already exists
-    const existing = await pool.query(
-      'SELECT id FROM users WHERE email = $1', [email]
-    );
-    if (existing.rows.length > 0) {
-      return res.status(409).json({ message: 'Email already registered.' });
-    }
-
-    // Hash the password (never store plain passwords)
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Save user to database
-    const result = await pool.query(
-      `INSERT INTO users (name, email, password, preferred_language)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, name, email, preferred_language, created_at`,
-      [name, email, hashedPassword, preferred_language]
-    );
-
-    const user = result.rows[0];
-    const token = generateToken(user);
-
-    res.status(201).json({
-      message: 'Account created successfully!',
-      token,
-      user,
-      avatar: user.avatar
-    });
-
-  } catch (err) {
-    console.error('Signup error:', err);
-    res.status(500).json({ message: 'Server error during signup.' });
+  const existing = await pool.query(
+    'SELECT id FROM users WHERE email = $1', [email]
+  );
+  if (existing.rows.length > 0) {
+    throw new ConflictError('An account with this email already exists.');
   }
-};
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const result = await pool.query(
+    `INSERT INTO users (name, email, password, preferred_language)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, name, email, preferred_language, created_at, avatar`,
+    [name, email, hashedPassword, preferred_language]
+  );
+
+  const user = result.rows[0];
+  const token = generateToken(user);
+
+  logger.info(`New user registered: ${email}`);
+  sendWelcomeEmail(name, email);
+
+  res.status(201).json({
+    message: 'Account created successfully!',
+    token,
+    user,
+  });
+});
 
 // POST /api/auth/login
 const login = async (req, res) => {

@@ -6,6 +6,7 @@ const db = require('./config/database');
 const authRoutes = require('./routes/auth');
 const translateRoutes = require('./routes/translate');
 const path = require('path');
+const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -23,7 +25,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Majesty API is running!' });
 });
 
-// 👇 Add this route to test the database
+// Database health check
 app.get('/api/health/db', async (req, res) => {
   try {
     const result = await db.query('SELECT NOW() as time');
@@ -32,6 +34,9 @@ app.get('/api/health/db', async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
+
+// Global error handler — MUST be last, after all routes
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;

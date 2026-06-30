@@ -24,8 +24,8 @@ export default function RegisterPage() {
     return setError("Passwords do not match.");
   }
 
-  if (form.password.length < 6) {
-    return setError("Password must be at least 6 characters.");
+  if (form.password.length < 8) {
+    return setError("Password must be at least 8 characters.");
   }
 
   setLoading(true);
