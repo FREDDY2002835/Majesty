@@ -37,7 +37,7 @@ export default function LoginPage() {
         }}>
           Welcome back
         </h1>
-        <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+        <p style={{ fontSize: "14px", color: "var(--text-secondary)" }}>
           Login to continue to your account
         </p>
       </div>
@@ -79,7 +79,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: "right", marginTop: "-6px" }}>
-          <Link to="/forgot-password" style={{ fontSize: "12px", color: "var(--accent)" }}>
+          <Link to="/forgot-password" style={{ fontSize: "13px", color: "var(--accent)" }}>
             Forgot password?
           </Link>
         </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
           Login
       </button>
 
-        <p style={{ textAlign: "center", fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>
+        <p style={{ textAlign: "center", fontSize: "14px", color: "var(--text-secondary)", marginTop: "6px" }}>
           Don't have an account?{" "}
           <Link to="/register" style={{ color: "var(--accent)", fontWeight: "500" }}>
             Register
