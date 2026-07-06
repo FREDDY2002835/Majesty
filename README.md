@@ -251,7 +251,7 @@ Contributions are welcome! Please follow these steps:
 ---
 
 <div align="center">
-  Made with ❤️ by Frederick Muhimuzi for the codeblossom Community
+  Made with ❤️ by Frederick Muhimuzi for the 🌸codeblossom Community
   <br/>
   <strong>Majesty — Breaking language barriers, one translation at a time.</strong>
 </div>
