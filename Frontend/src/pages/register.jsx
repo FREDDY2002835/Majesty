@@ -11,6 +11,7 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState("");     
   const [loading, setLoading] = useState(false); 
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async () => {
@@ -31,12 +32,14 @@ export default function RegisterPage() {
   setLoading(true);
   const data = await signup(form.name, form.email, form.password);
   setLoading(false);
+  
 
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    navigate("/dashboard");
-  } else {
+ if (data.token) {
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  setSuccess("Account created successfully! Redirecting...");
+  setTimeout(() => navigate("/dashboard"), 2000);
+} else {
     setError(data.message || "Registration failed. Please try again.");
   }
 };
@@ -131,6 +134,12 @@ export default function RegisterPage() {
         {error && (
           <p style={{ color: "#ef4444", fontSize: "13px", textAlign: "center" }}>
             {error}
+          </p>
+        )}
+
+        {success && (
+          <p style={{ color: "#22c55e", fontSize: "13px", textAlign: "center" }}>
+            {success}
           </p>
         )}
 
