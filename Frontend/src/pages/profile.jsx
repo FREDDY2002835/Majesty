@@ -22,7 +22,7 @@ export default function ProfilePage() {
     if (userData.user) {
       setProfile(userData.user);
       setAvatarUrl(userData.user.avatar 
-  ? `http://localhost:5000${userData.user.avatar}` 
+  ? `https://majesty-backend-inux.onrender.com${userData.user.avatar}` 
   : null);
       setForm({
         name: userData.user.name,
