@@ -1,4 +1,4 @@
-const BASE_URL = 'https://majesty-backend-inux.onrender.com';
+const BASE_URL = 'https://majesty-backend-inux.onrender.com/api';
 
 // Helper: get token from localStorage
 const getToken = () => localStorage.getItem('token');
