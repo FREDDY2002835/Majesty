@@ -157,7 +157,7 @@ export default function RegisterPage() {
             marginTop: "4px", cursor: "pointer",
           }}
         >
-          {loading ? "Creating account..." : "Register"}
+           {loading ? "Please wait, server is waking up... ⏳" : "Register"}
         </button>
 
         <p style={{ textAlign: "center", fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>
