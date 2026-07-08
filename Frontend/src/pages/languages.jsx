@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import ReactCountryFlag from "react-country-flag";
 import { GB, FR, ES, CN, SA, KE } from "country-flag-icons/react/3x2";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://majesty-backend-inux.onrender.com/api";
 
 const getSupportedLanguages = () =>
   fetch(`${BASE_URL}/translate/languages`).then(r => r.json());
