@@ -39,7 +39,11 @@ const signup = asyncHandler(async (req, res) => {
   const token = generateToken(user);
 
   logger.info(`New user registered: ${email}`);
+  try {
   sendWelcomeEmail(name, email);
+} catch (err) {
+  console.error('Welcome email failed silently:', err.message);
+}
 
   res.status(201).json({
     message: 'Account created successfully!',
