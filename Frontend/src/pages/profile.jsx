@@ -49,7 +49,7 @@ const handleAvatarChange = async (e) => {
 
   const data = await uploadAvatar(file);
   if (data.avatar) {
-    const fullUrl = `http://localhost:5000${data.avatar}`;
+    const fullUrl = `https://majesty-backend-inux.onrender.com${data.avatar}`;
     setAvatarUrl(fullUrl);
     // 👇 Save to localStorage so dashboard and other pages see it
     const stored = JSON.parse(localStorage.getItem("user") || "{}");

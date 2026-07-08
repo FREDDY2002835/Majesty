@@ -397,7 +397,7 @@ const playTranslation = () => {
                 }}>
                   {user.avatar ? (
                     <img
-                      src={`http://localhost:5000${user.avatar}`}
+                      src={`https://majesty-backend-inux.onrender.com${user.avatar}`}
                       alt="avatar"
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
