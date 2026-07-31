@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/fred-logo.png" alt="Majesty Logo" width="150"/>
 
-🎤 **MAJESTY** — AI-Powered Speech Translation Platform
+ **MAJESTY** — AI-Powered Speech Translation Platform
 
 > Speak. Translate. Connect with the world.
 
