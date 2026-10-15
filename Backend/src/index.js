@@ -31,7 +31,8 @@ app.get('/api/health/db', async (req, res) => {
     const result = await db.query('SELECT NOW() as time');
     res.json({ status: 'ok', db_time: result.rows[0].time });
   } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
+    console.error('Database health check failed:', err.message);
+    res.status(503).json({ status: 'error', message: 'Database is unavailable. Check DATABASE_URL and database status in the hosting dashboard.' });
   }
 });
 

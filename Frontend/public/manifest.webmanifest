@@ -1,0 +1,16 @@
+{
+  "id": "/",
+  "name": "Majesty AI — Speech Translation",
+  "short_name": "Majesty AI",
+  "description": "AI-powered speech and text translation.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060d1f",
+  "theme_color": "#060d1f",
+  "icons": [
+    { "src": "/icons/majesty-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/majesty-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

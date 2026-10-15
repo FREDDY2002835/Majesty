@@ -31,7 +31,7 @@ export default function AuthLayout({ children }) {
 
       {/* Card */}
       <div
-        className="fade-up"
+        className="fade-up auth-card"
         style={{
           width: "100%",
           maxWidth: "420px",

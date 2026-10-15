@@ -23,3 +23,12 @@ const resolved =
     : saved;
 document.documentElement.classList.add(resolved);
 
+
+// Enable installability and cache the app shell. API requests still require a connection.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
