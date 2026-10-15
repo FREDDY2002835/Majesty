@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://majesty-backend-inux.onrender.com/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://majesty-k45s.onrender.com/api';
 
 // Helper: get token from localStorage
 const getToken = () => localStorage.getItem('token');
