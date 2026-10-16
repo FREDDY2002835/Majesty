@@ -1,0 +1,12 @@
+# Optional blueprint: makes refreshing any page (e.g. /dashboard/history) work
+services:
+  - type: web
+    name: majesty-frontend
+    runtime: static
+    rootDir: Frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

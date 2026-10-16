@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
-import { avatarSrc, translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
+import Avatar from "../components/Avatar";
+import { translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
@@ -390,20 +391,12 @@ const playTranslation = () => {
     }}
 >
               <div style={{
-                  width: "32px", height: "32px", borderRadius: "50%",
+                  width: "32px", height: "32px", minWidth: "32px", flexShrink: 0, borderRadius: "50%",
                   background: "var(--accent)", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: "13px", fontWeight: "600", color: "white",
                   overflow: "hidden",
                 }}>
-                  {user.avatar ? (
-                    <img
-                      src={avatarSrc(user.avatar)}
-                      alt="avatar"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : (
-                    user.name?.charAt(0).toUpperCase()
-                  )}
+                  <Avatar src={user.avatar} name={user.name} />
                 </div>
               <span className="hide-mobile" style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
 
@@ -446,19 +439,7 @@ const playTranslation = () => {
                         overflow: "hidden",
                       }}
                     >
-                      {user.avatar ? (
-                        <img
-                          src={avatarSrc(user.avatar)}
-                          alt="avatar"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        user.name?.charAt(0).toUpperCase()
-                      )}
+                      <Avatar src={user.avatar} name={user.name} />
                     </div>
 
                     <h3 style={{ margin: 0 }}>{user.name}</h3>

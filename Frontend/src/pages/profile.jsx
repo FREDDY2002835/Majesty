@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Avatar from "../components/Avatar";
 import { getMe, updateMe, getHistory } from "../api";
 import { uploadAvatar, avatarSrc } from "../api";
 
@@ -192,15 +193,7 @@ const handleAvatarChange = async (e) => {
     boxShadow: "var(--shadow-accent)",
     overflow: "hidden",
   }}>
-    {avatarUrl ? (
-      <img
-        src={avatarUrl}
-        alt="Profile"
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      />
-    ) : (
-      profile?.name?.charAt(0).toUpperCase()
-    )}
+    <Avatar src={avatarUrl} name={profile?.name} />
   </div>
 
   {/* Upload button - always visible */}
