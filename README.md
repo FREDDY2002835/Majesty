@@ -236,7 +236,6 @@ Contributions are welcome! Please follow these steps:
 **Frederick Muhimuzi**
 - GitHub: https://github.com/FREDDY2002835
 - Email: aganzemuhimuzi8@gmail.com
-- Live Demo: https://luminous-sprinkles-e167ad.netlify.app/
 ---
 
 

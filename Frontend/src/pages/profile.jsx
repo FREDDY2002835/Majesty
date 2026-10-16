@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { getMe, updateMe, getHistory } from "../api";
-import { uploadAvatar } from "../api";
+import { uploadAvatar, avatarSrc } from "../api";
 
 
 export default function ProfilePage() {
@@ -21,9 +21,7 @@ export default function ProfilePage() {
   console.log("Avatar from DB:", userData.user?.avatar); // 👈 add this
     if (userData.user) {
       setProfile(userData.user);
-      setAvatarUrl(userData.user.avatar 
-  ? `https://majesty-backend-inux.onrender.com${userData.user.avatar}` 
-  : null);
+      setAvatarUrl(avatarSrc(userData.user.avatar));
       setForm({
         name: userData.user.name,
         email: userData.user.email,
@@ -49,7 +47,7 @@ const handleAvatarChange = async (e) => {
 
   const data = await uploadAvatar(file);
   if (data.avatar) {
-    const fullUrl = `https://majesty-backend-inux.onrender.com${data.avatar}`;
+    const fullUrl = avatarSrc(data.avatar);
     setAvatarUrl(fullUrl);
     // 👇 Save to localStorage so dashboard and other pages see it
     const stored = JSON.parse(localStorage.getItem("user") || "{}");
@@ -169,7 +167,7 @@ const handleAvatarChange = async (e) => {
           )}
         </header>
 
-        <main style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px", maxWidth: "700px" }}>
+        <main className="page-main" style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px", maxWidth: "700px" }}>
 
           {loading ? (
             <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>

@@ -31,8 +31,7 @@ app.get('/api/health/db', async (req, res) => {
     const result = await db.query('SELECT NOW() as time');
     res.json({ status: 'ok', db_time: result.rows[0].time });
   } catch (err) {
-    console.error('Database health check failed:', err.message);
-    res.status(503).json({ status: 'error', message: 'Database is unavailable. Check DATABASE_URL and database status in the hosting dashboard.' });
+    res.status(500).json({ status: 'error', message: err.message });
   }
 });
 
@@ -41,6 +40,10 @@ app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
+// Make sure the avatar column can hold a full image (data URL)
+db.query('ALTER TABLE users ALTER COLUMN avatar TYPE TEXT')
+  .catch((err) => console.error('avatar column migration:', err.message));
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

@@ -11,11 +11,13 @@ import HelpPage from "./pages/help.jsx";
 import { useTheme } from './hooks/useTheme';
 import ForgotPasswordPage from "./pages/forgotPassword";
 import { useThemeColor } from "./hooks/useThemeColor";
+import BottomNav from "./components/BottomNav";
 
 export default function App() {
   useTheme();
    useThemeColor();
   return (
+    <>
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
@@ -29,5 +31,7 @@ export default function App() {
       <Route path="/dashboard/Help" element={<HelpPage/>}/>
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     </Routes>
+    <BottomNav />
+    </>
   );
 }

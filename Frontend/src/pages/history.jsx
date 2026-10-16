@@ -237,7 +237,7 @@ export default function HistoryPage() {
                           onMouseEnter={e => e.currentTarget.style.background = "var(--bg-hover)"}
                           onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                         >
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto", alignItems: "center", gap: "16px" }}>
+                          <div className="row-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto", alignItems: "center", gap: "16px" }}>
 
                             {/* Original */}
                             <div>

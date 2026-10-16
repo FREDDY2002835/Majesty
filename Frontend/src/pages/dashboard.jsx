@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import WaveForm from "../components/WaveForm";
-import { translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
+import { avatarSrc, translate, getHistory, detectLanguage, deleteHistoryItem, getSupportedLanguages } from "../api";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
@@ -341,7 +341,7 @@ const playTranslation = () => {
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", overflow: "auto" }}>
 
         {/* Top navbar */}
-        <header style={{
+        <header className="app-header" style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "16px 28px", borderBottom: "1px solid var(--border)",
           background: "var(--bg-secondary)", position: "sticky", top: 0, zIndex: 10,
@@ -397,7 +397,7 @@ const playTranslation = () => {
                 }}>
                   {user.avatar ? (
                     <img
-                      src={`https://majesty-backend-inux.onrender.com${user.avatar}`}
+                      src={avatarSrc(user.avatar)}
                       alt="avatar"
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
@@ -405,7 +405,7 @@ const playTranslation = () => {
                     user.name?.charAt(0).toUpperCase()
                   )}
                 </div>
-              <span style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
+              <span className="hide-mobile" style={{ fontSize: "14px", color: "var(--text-primary)" }}>{user.name}</span>
 
               {showProfileMenu && (
                 <div
@@ -448,7 +448,7 @@ const playTranslation = () => {
                     >
                       {user.avatar ? (
                         <img
-                          src={`https://majesty-backend-inux.onrender.com${user.avatar}`}
+                          src={avatarSrc(user.avatar)}
                           alt="avatar"
                           style={{
                             width: "100%",
@@ -520,10 +520,10 @@ const playTranslation = () => {
         </header>
 
         {/* Page body */}
-        <main style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px" }}>
+        <main className="page-main" style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px" }}>
 
           {/* Welcome + language selector */}
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+          <div className="welcome-row" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <h1 style={{ fontFamily: "var(--font-display)", fontSize: "24px", fontWeight: "700", marginBottom: "4px", color: "var(--accent)" }}>
                 Welcome, {user.name}! 👋
@@ -534,7 +534,7 @@ const playTranslation = () => {
             </div>
 
             {/* Language dropdown */}
-            <div style={{ position: "relative" }}>
+            <div className="lang-picker" style={{ position: "relative" }}>
               <div style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 background: "var(--bg-card)", border: "1px solid var(--border)",
@@ -614,7 +614,7 @@ const playTranslation = () => {
           </div>
 
           {/* Translation panels */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0", alignItems: "stretch" }}>
+          <div className="translate-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0", alignItems: "stretch" }}>
 
             {/* Original speech */}
             <div style={{
@@ -704,10 +704,10 @@ const playTranslation = () => {
           </div>
 
           {/* Controls */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+          <div className="controls-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
 
             {/* Left: start/stop */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div className="controls-left" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <button
                 onClick={handleTranslate} className="dash-btn-ghost"
                 style={{
@@ -772,7 +772,7 @@ const playTranslation = () => {
             </div>
 
             {/* Right: play + save */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div className="controls-right" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               {listening && (
                 <div style={{ textAlign: "center", marginRight: "8px" }}>
                   <p style={{ color: "var(--accent)", fontSize: "13px", fontWeight: "500" }}>Listening...</p>
@@ -874,7 +874,7 @@ const playTranslation = () => {
                   </p>
                 ) : (
                   recentHistory.map((item, i) => (
-                    <div key={item.id} style={{
+                    <div key={item.id} className="recent-item" style={{
                       display: "flex", justifyContent: "space-between", alignItems: "center",
                       padding: "14px 0",
                       borderBottom: i < recentHistory.length - 1 ? "1px solid var(--border)" : "none"

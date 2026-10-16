@@ -54,16 +54,7 @@ const signup = asyncHandler(async (req, res) => {
 
 // POST /api/auth/login
 const login = async (req, res) => {
-  const { email, password } = req.body || {};
-
-  if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
-  }
-
-  if (!process.env.JWT_SECRET) {
-    console.error('Login configuration error: JWT_SECRET is not configured.');
-    return res.status(503).json({ message: 'Login is temporarily unavailable. Please contact the app administrator.' });
-  }
+  const { email, password } = req.body;
 
   try {
     // Find user by email
@@ -97,8 +88,8 @@ const login = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Login error:', { message: err.message, code: err.code, detail: err.detail });
-    res.status(500).json({ message: 'Server error during login. Check the backend logs for the underlying cause.' });
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error during login.' });
   }
 };
 
@@ -181,7 +172,8 @@ const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
 
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    // Store the image itself in the DB as a data URL (survives Render redeploys)
+    const avatarUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
 
     await pool.query(
       'UPDATE users SET avatar = $1 WHERE id = $2',
