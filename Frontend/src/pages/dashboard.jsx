@@ -501,7 +501,7 @@ const playTranslation = () => {
         </header>
 
         {/* Page body */}
-        <main className="page-main" style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px" }}>
+        <main className="page-main dash-main" style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px" }}>
 
           {/* Welcome + language selector */}
           <div className="welcome-row" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>

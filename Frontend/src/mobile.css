@@ -1,6 +1,13 @@
 /* ───────── Mobile layout (phones) ───────── */
 @media (max-width: 768px) {
-  html, body { overflow-x: hidden; }
+  /* App-like: no sideways wobble, no pull-to-refresh / rubber-band on the whole screen */
+  html, body {
+    overflow-x: clip;
+    max-width: 100vw;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body { position: relative; }
 
   /* ── Top navbar: tidy, roomy, app-like ── */
   header, .app-header {
@@ -25,11 +32,11 @@
     gap: 18px !important;
     max-width: 100% !important;
   }
-  main h1 { font-size: 20px !important; line-height: 1.25; }
-  main h2 { font-size: 16px !important; }
-  main h3 { font-size: 15px !important; }
-  main p, main label, main li { font-size: 13.5px !important; line-height: 1.45; }
-  main button { font-size: 13.5px !important; }
+  .dash-main h1 { font-size: 20px !important; line-height: 1.25; }
+  .dash-main h2 { font-size: 16px !important; }
+  .dash-main h3 { font-size: 15px !important; }
+  .dash-main p, .dash-main label, .dash-main li { font-size: 13.5px !important; line-height: 1.45; }
+  .dash-main button { font-size: 13.5px !important; }
 
   /* Welcome + language picker */
   .welcome-row { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
@@ -67,6 +74,12 @@
   .controls-right { display: grid !important; grid-template-columns: 1fr 2fr 1fr; gap: 10px !important; }
   .controls-right > div { grid-column: 1 / -1; margin: 0 !important; }
   .controls-right > button { justify-content: center; padding: 13px 6px !important; gap: 6px !important; }
+
+  /* ── Other pages (History, Saved, Languages, Settings, Profile, Help): scale down ── */
+  main:not(.dash-main) { zoom: 0.86; padding: 16px 14px 28px !important; gap: 16px !important; }
+  header:not(.app-header) { zoom: 0.92; }
+  main div[style*="minmax(260px"], main div[style*="minmax(220px"] { grid-template-columns: 1fr !important; }
+  main div[style*="minmax(200px"] { grid-template-columns: 1fr 1fr !important; }
 
   /* Lists (history / saved / recent) */
   .row-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
