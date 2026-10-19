@@ -4,6 +4,7 @@ import logo from "../assets/logo.png";
 export default function AuthLayout({ children }) {
   return (
     <div
+      className="auth-wrap"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -31,7 +32,7 @@ export default function AuthLayout({ children }) {
 
       {/* Card */}
       <div
-        className="fade-up"
+        className="fade-up auth-card"
         style={{
           width: "100%",
           maxWidth: "420px",
@@ -53,6 +54,7 @@ export default function AuthLayout({ children }) {
             <img 
   src={logo} 
   alt="Logo" 
+  className="auth-logo"
   style={{ 
     width: "70px", 
     height: "auto",

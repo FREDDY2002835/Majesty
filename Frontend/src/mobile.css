@@ -1,7 +1,6 @@
 /* ───────── Mobile layout (phones) ───────── */
 @media (max-width: 768px) {
   html, body { overflow-x: hidden; font-size: 13px; }
-  input, textarea, select { font-size: 16px !important; } /* stops iOS zoom */
 
   /* Header */
   header, .app-header {
@@ -82,4 +81,17 @@
   /* Login / register */
   form h1, form h2 { font-size: 20px !important; }
   form input { padding-top: 11px !important; padding-bottom: 11px !important; }
+
+  /* ── Login / Register / Forgot password ── */
+  .auth-wrap { padding: 14px !important; align-items: flex-start !important; padding-top: 8vh !important; }
+  .auth-card { padding: 22px 18px !important; border-radius: 16px !important; max-width: 100% !important; }
+  .auth-card .auth-logo { width: 46px !important; }
+  .auth-card span { font-size: 17px !important; }
+  .auth-card h1, .auth-card h2 { font-size: 17px !important; margin-bottom: 2px !important; }
+  .auth-card p { font-size: 12px !important; }
+  .auth-card a { font-size: 12px !important; }
+  .auth-card input { font-size: 13px !important; padding-top: 10px !important; padding-bottom: 10px !important; }
+  .auth-card button { font-size: 13px !important; padding-top: 11px !important; padding-bottom: 11px !important; }
+  .auth-card div[style*="margin-bottom: 28px"] { margin-bottom: 16px !important; }
+  .auth-card div[style*="gap: 14px"] { gap: 10px !important; }
 }
