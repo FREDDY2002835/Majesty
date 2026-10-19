@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.onrender.majesty_1.twa",
+        "sha256_cert_fingerprints": ["5F:62:0A:8B:C4:C3:1E:3A:E2:A0:08:04:78:29:39:C3:D7:B5:5D:64:93:66:27:19:D6:6E:3F:93:6A:C7:CE:7F"]
+      }
+    }]
