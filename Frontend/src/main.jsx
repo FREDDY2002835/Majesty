@@ -24,3 +24,10 @@ const resolved =
     : saved;
 document.documentElement.classList.add(resolved);
 
+
+// Register the service worker so the app can be installed (phone + desktop)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}

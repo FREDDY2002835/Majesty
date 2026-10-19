@@ -1,20 +1,40 @@
-const CACHE_NAME = 'majesty-shell-v1';
-const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.svg'];
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+// Minimal service worker: makes the app installable and loads the shell offline.
+const CACHE = "majesty-shell-v1";
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["/", "/icon-192.png"])));
+  self.skipWaiting();
 });
-self.addEventListener('activate', (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+  );
+  self.clients.claim();
 });
-self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
-  // Network-first for app navigation so deployments and routes stay fresh.
-  if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).then((response) => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put('/', copy));
-      return response;
-    }).catch(() => caches.match('/')));
+
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  const url = new URL(req.url);
+  // Only handle same-origin GETs; never touch the backend API calls
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
+
+  // Pages: network first, fall back to the cached shell when offline
+  if (req.mode === "navigate") {
+    e.respondWith(fetch(req).catch(() => caches.match("/")));
+    return;
   }
+
+  // Static assets: cache first, then network (and remember it)
+  e.respondWith(
+    caches.match(req).then(
+      (hit) =>
+        hit ||
+        fetch(req).then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+          return res;
+        })
+    )
+  );
 });

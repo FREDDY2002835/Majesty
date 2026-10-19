@@ -1,16 +1,17 @@
 {
-  "id": "/",
-  "name": "Majesty AI — Speech Translation",
-  "short_name": "Majesty AI",
-  "description": "AI-powered speech and text translation.",
-  "start_url": "/",
+  "name": "Majesty - AI Speech Translation",
+  "short_name": "Majesty",
+  "description": "Speak, translate and connect with the world.",
+  "start_url": "/dashboard",
   "scope": "/",
+  "id": "/",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "background_color": "#060d1f",
   "theme_color": "#060d1f",
   "icons": [
-    { "src": "/icons/majesty-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/majesty-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
